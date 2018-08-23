@@ -24,7 +24,7 @@ eureka:
         prefer-ip-address: true
     client:
         service-url:
-            defaultZone: http://admin:${jhipster.registry.password}@localhost:8761/eureka/
+            defaultZone: http://admin:${jhipster.registry.password}@registry.xedflix.com:8761/eureka/
 
 spring:
     devtools:
@@ -36,7 +36,7 @@ spring:
         type: com.zaxxer.hikari.HikariDataSource
         url: jdbc:mysql://localhost:3306/XedflixVideoService?useUnicode=true&characterEncoding=utf8&useSSL=false
         username: root
-        password:
+        password: t#fJv0{76|$]zZs
         hikari:
             data-source-properties:
                 cachePrepStmts: true
@@ -131,11 +131,11 @@ jhipster:
         jmx:
             enabled: true
         logs: # Reports Dropwizard metrics in the logs
-            enabled: false
+            enabled: true
             report-frequency: 60 # in seconds
     logging:
         logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
-            enabled: false
+            enabled: true
             host: localhost
             port: 5000
             queue-size: 512

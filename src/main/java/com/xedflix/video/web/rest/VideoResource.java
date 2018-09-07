@@ -11,6 +11,7 @@ import com.xedflix.video.config.ApplicationProperties;
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.security.SecurityUtils;
 import com.xedflix.video.service.VideoService;
+import com.xedflix.video.service.exceptions.ActionNotSupportedException;
 import com.xedflix.video.web.rest.errors.BadRequestAlertException;
 import com.xedflix.video.web.rest.util.HeaderUtil;
 import com.xedflix.video.web.rest.util.PaginationUtil;
@@ -65,7 +66,7 @@ public class VideoResource {
      */
     @PostMapping("/videos")
     @Timed
-    public ResponseEntity<Video> createVideo(@RequestBody Video video) throws URISyntaxException {
+    public ResponseEntity<Video> createVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException {
         log.debug("REST request to save Video : {}", video);
         if (video.getId() != null) {
             throw new BadRequestAlertException("A new video cannot already have an ID", ENTITY_NAME, "idexists");
@@ -87,12 +88,12 @@ public class VideoResource {
      */
     @PutMapping("/videos")
     @Timed
-    public ResponseEntity<Video> updateVideo(@RequestBody Video video) throws URISyntaxException {
+    public ResponseEntity<Video> updateVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException {
         log.debug("REST request to update Video : {}", video);
         if (video.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Video result = videoService.save(video);
+        Video result = videoService.update(video);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, video.getId().toString()))
             .body(result);

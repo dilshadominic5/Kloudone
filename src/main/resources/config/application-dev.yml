@@ -20,6 +20,7 @@ logging:
         com.xedflix.video: DEBUG
 
 eureka:
+    enabled: false
     instance:
         prefer-ip-address: true
     client:

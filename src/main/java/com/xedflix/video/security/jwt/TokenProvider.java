@@ -1,5 +1,6 @@
 package com.xedflix.video.security.jwt;
 
+import com.xedflix.video.security.UserNamePasswordAuthenticationTokenExtended;
 import io.github.jhipster.config.JHipsterProperties;
 
 import java.nio.charset.StandardCharsets;
@@ -85,7 +86,16 @@ public class TokenProvider {
 
         User principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        Map<String, Object> claimsMap = claims
+            .entrySet()
+            .stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        UserNamePasswordAuthenticationTokenExtended userNamePasswordAuthenticationTokenExtended =
+            new UserNamePasswordAuthenticationTokenExtended(principal, token, authorities, claims);
+        userNamePasswordAuthenticationTokenExtended.setDetails(claimsMap);
+
+        return userNamePasswordAuthenticationTokenExtended;
     }
 
     public boolean validateToken(String authToken) {

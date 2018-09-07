@@ -23,6 +23,7 @@ eureka:
     instance:
         prefer-ip-address: true
     client:
+        enabled: false
         service-url:
             defaultZone: http://admin:${jhipster.registry.password}@localhost:8761/eureka/
 
@@ -94,7 +95,7 @@ spring:
 #        key-alias: xedflixvideoservice
 # ===================================================================
 server:
-    port: 8083
+    port: 8084
 
 # ===================================================================
 # JHipster specific properties

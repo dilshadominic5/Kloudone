@@ -1,12 +1,16 @@
 package com.xedflix.video.domain;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,8 +36,11 @@ public class Video implements Serializable {
     @Column(name = "url")
     private String url;
 
-    @Column(name = "user_id")
-    private Integer userId;
+    @Column(name = "user_id", updatable = false)
+    private Long userId;
+
+    @Column(name = "organization_id", updatable = false)
+    private Long organizationId;
 
     @Column(name = "image_url")
     private String imageUrl;
@@ -44,7 +51,7 @@ public class Video implements Serializable {
     @Column(name = "duration")
     private Float duration;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDate createdAt;
 
     @Column(name = "updated_at")
@@ -101,17 +108,30 @@ public class Video implements Serializable {
         this.url = url;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public Video userId(Integer userId) {
+    public Video userId(Long userId) {
         this.userId = userId;
         return this;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public Video organizationId(Long organizationId) {
+        this.organizationId = organizationId;
+        return this;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
     public String getImageUrl() {
@@ -221,6 +241,7 @@ public class Video implements Serializable {
             ", fileName='" + getFileName() + "'" +
             ", url='" + getUrl() + "'" +
             ", userId=" + getUserId() +
+            ", organizationId=" + getOrganizationId() +
             ", imageUrl='" + getImageUrl() + "'" +
             ", size=" + getSize() +
             ", duration=" + getDuration() +
@@ -228,5 +249,32 @@ public class Video implements Serializable {
             ", updatedAt='" + getUpdatedAt() + "'" +
             ", isArchived='" + isIsArchived() + "'" +
             "}";
+    }
+
+    public static Video merge(Video object, Video into) throws IllegalAccessException, InstantiationException {
+
+        List<String> ignoreList = new ArrayList<>();
+        ignoreList.add("serialVersionUID");
+        ignoreList.add("userId");
+        ignoreList.add("organizationId");
+        ignoreList.add("createdAt");
+
+        List<String> notAccessList = new ArrayList<>();
+        notAccessList.add("serialVersionUID");
+
+        Class<Video> videoClass = Video.class;
+        Field[] fields = videoClass.getDeclaredFields();
+        Video video = videoClass.newInstance();
+        for (Field field: fields) {
+            if(!notAccessList.contains(field.getName())) {
+                field.setAccessible(true);
+                Object value1 = field.get(object);
+                Object value2 = field.get(into);
+                Object value = (value1 != null && !ignoreList.contains(field.getName())) ? value1 : value2;
+                field.set(video, value);
+            }
+        }
+
+        return video;
     }
 }

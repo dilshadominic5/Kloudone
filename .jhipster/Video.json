@@ -15,7 +15,11 @@
         },
         {
             "fieldName": "userId",
-            "fieldType": "Integer"
+            "fieldType": "Long"
+        },
+        {
+            "fieldName": "organizationId",
+            "fieldType": "Long"
         },
         {
             "fieldName": "imageUrl",

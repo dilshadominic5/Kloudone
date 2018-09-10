@@ -75,8 +75,11 @@ public class LivestreamResourceIntTest {
     private static final Boolean DEFAULT_HAS_ENDED = false;
     private static final Boolean UPDATED_HAS_ENDED = true;
 
-    private static final Integer DEFAULT_USER_ID = 1;
-    private static final Integer UPDATED_USER_ID = 2;
+    private static final Long DEFAULT_USER_ID = 1L;
+    private static final Long UPDATED_USER_ID = 2L;
+
+    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+    private static final Long UPDATED_ORGANIZATION_ID = 2L;
 
     private static final LocalDate DEFAULT_CREATED_AT = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_CREATED_AT = LocalDate.now(ZoneId.systemDefault());
@@ -142,6 +145,7 @@ public class LivestreamResourceIntTest {
             .hasStarted(DEFAULT_HAS_STARTED)
             .hasEnded(DEFAULT_HAS_ENDED)
             .userId(DEFAULT_USER_ID)
+            .organizationId(DEFAULT_ORGANIZATION_ID)
             .createdAt(DEFAULT_CREATED_AT)
             .updatedAt(DEFAULT_UPDATED_AT)
             .isArchived(DEFAULT_IS_ARCHIVED);
@@ -180,6 +184,7 @@ public class LivestreamResourceIntTest {
         assertThat(testLivestream.isHasStarted()).isEqualTo(DEFAULT_HAS_STARTED);
         assertThat(testLivestream.isHasEnded()).isEqualTo(DEFAULT_HAS_ENDED);
         assertThat(testLivestream.getUserId()).isEqualTo(DEFAULT_USER_ID);
+        assertThat(testLivestream.getOrganizationId()).isEqualTo(DEFAULT_ORGANIZATION_ID);
         assertThat(testLivestream.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
         assertThat(testLivestream.getUpdatedAt()).isEqualTo(DEFAULT_UPDATED_AT);
         assertThat(testLivestream.isIsArchived()).isEqualTo(DEFAULT_IS_ARCHIVED);
@@ -226,7 +231,8 @@ public class LivestreamResourceIntTest {
             .andExpect(jsonPath("$.[*].endedAt").value(hasItem(DEFAULT_ENDED_AT.toString())))
             .andExpect(jsonPath("$.[*].hasStarted").value(hasItem(DEFAULT_HAS_STARTED.booleanValue())))
             .andExpect(jsonPath("$.[*].hasEnded").value(hasItem(DEFAULT_HAS_ENDED.booleanValue())))
-            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID)))
+            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
+            .andExpect(jsonPath("$.[*].organizationId").value(hasItem(DEFAULT_ORGANIZATION_ID.intValue())))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
             .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(DEFAULT_UPDATED_AT.toString())))
             .andExpect(jsonPath("$.[*].isArchived").value(hasItem(DEFAULT_IS_ARCHIVED.booleanValue())));
@@ -255,7 +261,8 @@ public class LivestreamResourceIntTest {
             .andExpect(jsonPath("$.endedAt").value(DEFAULT_ENDED_AT.toString()))
             .andExpect(jsonPath("$.hasStarted").value(DEFAULT_HAS_STARTED.booleanValue()))
             .andExpect(jsonPath("$.hasEnded").value(DEFAULT_HAS_ENDED.booleanValue()))
-            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID))
+            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()))
+            .andExpect(jsonPath("$.organizationId").value(DEFAULT_ORGANIZATION_ID.intValue()))
             .andExpect(jsonPath("$.createdAt").value(DEFAULT_CREATED_AT.toString()))
             .andExpect(jsonPath("$.updatedAt").value(DEFAULT_UPDATED_AT.toString()))
             .andExpect(jsonPath("$.isArchived").value(DEFAULT_IS_ARCHIVED.booleanValue()));
@@ -293,6 +300,7 @@ public class LivestreamResourceIntTest {
             .hasStarted(UPDATED_HAS_STARTED)
             .hasEnded(UPDATED_HAS_ENDED)
             .userId(UPDATED_USER_ID)
+            .organizationId(UPDATED_ORGANIZATION_ID)
             .createdAt(UPDATED_CREATED_AT)
             .updatedAt(UPDATED_UPDATED_AT)
             .isArchived(UPDATED_IS_ARCHIVED);
@@ -318,6 +326,7 @@ public class LivestreamResourceIntTest {
         assertThat(testLivestream.isHasStarted()).isEqualTo(UPDATED_HAS_STARTED);
         assertThat(testLivestream.isHasEnded()).isEqualTo(UPDATED_HAS_ENDED);
         assertThat(testLivestream.getUserId()).isEqualTo(UPDATED_USER_ID);
+        assertThat(testLivestream.getOrganizationId()).isEqualTo(UPDATED_ORGANIZATION_ID);
         assertThat(testLivestream.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
         assertThat(testLivestream.getUpdatedAt()).isEqualTo(UPDATED_UPDATED_AT);
         assertThat(testLivestream.isIsArchived()).isEqualTo(UPDATED_IS_ARCHIVED);

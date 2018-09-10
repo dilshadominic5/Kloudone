@@ -71,6 +71,10 @@ public class VideoResource {
         if (video.getId() != null) {
             throw new BadRequestAlertException("A new video cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        video.setUserId(SecurityUtils.getCurrentUserId());
+        video.setOrganizationId(SecurityUtils.getCurrentUserOrganizationId());
+
         Video result = videoService.save(video);
         return ResponseEntity.created(new URI("/api/videos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -88,7 +92,7 @@ public class VideoResource {
      */
     @PutMapping("/videos")
     @Timed
-    public ResponseEntity<Video> updateVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException {
+    public ResponseEntity<Video> updateVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException, IllegalAccessException, InstantiationException {
         log.debug("REST request to update Video : {}", video);
         if (video.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -107,7 +111,7 @@ public class VideoResource {
      */
     @GetMapping("/videos")
     @Timed
-    public ResponseEntity<List<Video>> getAllVideos(Pageable pageable) {
+    public ResponseEntity<List<Video>> getAllVideos(Pageable pageable) throws ActionNotSupportedException {
         log.debug("REST request to get a page of Videos");
         Page<Video> page = videoService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/videos");
@@ -122,7 +126,7 @@ public class VideoResource {
      */
     @GetMapping("/videos/{id}")
     @Timed
-    public ResponseEntity<Video> getVideo(@PathVariable Long id) {
+    public ResponseEntity<Video> getVideo(@PathVariable Long id) throws ActionNotSupportedException {
         log.debug("REST request to get Video : {}", id);
         Optional<Video> video = videoService.findOne(id);
         return ResponseUtil.wrapOrNotFound(video);
@@ -136,7 +140,7 @@ public class VideoResource {
      */
     @DeleteMapping("/videos/{id}")
     @Timed
-    public ResponseEntity<Void> deleteVideo(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteVideo(@PathVariable Long id) throws ActionNotSupportedException {
         log.debug("REST request to delete Video : {}", id);
         videoService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
@@ -150,6 +154,7 @@ public class VideoResource {
      * @param type The mime type of the file.
      * @return the ResponseEntity with status 200 (OK)
      */
+    // TODO: Need to move to service.
     @GetMapping("/videos/generate-pre-signed-url")
     public ResponseEntity<PresignedUrlVM> generatePreSignedUrl(@RequestParam(value = "filename") String fileName, @RequestParam( value = "type") String type) {
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()

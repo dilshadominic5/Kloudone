@@ -57,7 +57,10 @@ public class Livestream implements Serializable {
     private Boolean hasEnded;
 
     @Column(name = "user_id")
-    private Integer userId;
+    private Long userId;
+
+    @Column(name = "organization_id")
+    private Long organizationId;
 
     @Column(name = "created_at")
     private LocalDate createdAt;
@@ -220,17 +223,30 @@ public class Livestream implements Serializable {
         this.hasEnded = hasEnded;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public Livestream userId(Integer userId) {
+    public Livestream userId(Long userId) {
         this.userId = userId;
         return this;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public Livestream organizationId(Long organizationId) {
+        this.organizationId = organizationId;
+        return this;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
     public LocalDate getCreatedAt() {
@@ -309,6 +325,7 @@ public class Livestream implements Serializable {
             ", hasStarted='" + isHasStarted() + "'" +
             ", hasEnded='" + isHasEnded() + "'" +
             ", userId=" + getUserId() +
+            ", organizationId=" + getOrganizationId() +
             ", createdAt='" + getCreatedAt() + "'" +
             ", updatedAt='" + getUpdatedAt() + "'" +
             ", isArchived='" + isIsArchived() + "'" +

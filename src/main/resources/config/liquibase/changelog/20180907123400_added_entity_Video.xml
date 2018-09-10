@@ -34,7 +34,11 @@
                 <constraints nullable="true" />
             </column>
 
-            <column name="user_id" type="integer">
+            <column name="user_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="organization_id" type="bigint">
                 <constraints nullable="true" />
             </column>
 

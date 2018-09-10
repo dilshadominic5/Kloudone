@@ -51,8 +51,11 @@ public class VideoResourceIntTest {
     private static final String DEFAULT_URL = "AAAAAAAAAA";
     private static final String UPDATED_URL = "BBBBBBBBBB";
 
-    private static final Integer DEFAULT_USER_ID = 1;
-    private static final Integer UPDATED_USER_ID = 2;
+    private static final Long DEFAULT_USER_ID = 1L;
+    private static final Long UPDATED_USER_ID = 2L;
+
+    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+    private static final Long UPDATED_ORGANIZATION_ID = 2L;
 
     private static final String DEFAULT_IMAGE_URL = "AAAAAAAAAA";
     private static final String UPDATED_IMAGE_URL = "BBBBBBBBBB";
@@ -119,6 +122,7 @@ public class VideoResourceIntTest {
             .fileName(DEFAULT_FILE_NAME)
             .url(DEFAULT_URL)
             .userId(DEFAULT_USER_ID)
+            .organizationId(DEFAULT_ORGANIZATION_ID)
             .imageUrl(DEFAULT_IMAGE_URL)
             .size(DEFAULT_SIZE)
             .duration(DEFAULT_DURATION)
@@ -152,6 +156,7 @@ public class VideoResourceIntTest {
         assertThat(testVideo.getFileName()).isEqualTo(DEFAULT_FILE_NAME);
         assertThat(testVideo.getUrl()).isEqualTo(DEFAULT_URL);
         assertThat(testVideo.getUserId()).isEqualTo(DEFAULT_USER_ID);
+        assertThat(testVideo.getOrganizationId()).isEqualTo(DEFAULT_ORGANIZATION_ID);
         assertThat(testVideo.getImageUrl()).isEqualTo(DEFAULT_IMAGE_URL);
         assertThat(testVideo.getSize()).isEqualTo(DEFAULT_SIZE);
         assertThat(testVideo.getDuration()).isEqualTo(DEFAULT_DURATION);
@@ -193,7 +198,8 @@ public class VideoResourceIntTest {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
             .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME.toString())))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL.toString())))
-            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID)))
+            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
+            .andExpect(jsonPath("$.[*].organizationId").value(hasItem(DEFAULT_ORGANIZATION_ID.intValue())))
             .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGE_URL.toString())))
             .andExpect(jsonPath("$.[*].size").value(hasItem(DEFAULT_SIZE)))
             .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION.doubleValue())))
@@ -217,7 +223,8 @@ public class VideoResourceIntTest {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
             .andExpect(jsonPath("$.fileName").value(DEFAULT_FILE_NAME.toString()))
             .andExpect(jsonPath("$.url").value(DEFAULT_URL.toString()))
-            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID))
+            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()))
+            .andExpect(jsonPath("$.organizationId").value(DEFAULT_ORGANIZATION_ID.intValue()))
             .andExpect(jsonPath("$.imageUrl").value(DEFAULT_IMAGE_URL.toString()))
             .andExpect(jsonPath("$.size").value(DEFAULT_SIZE))
             .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION.doubleValue()))
@@ -250,6 +257,7 @@ public class VideoResourceIntTest {
             .fileName(UPDATED_FILE_NAME)
             .url(UPDATED_URL)
             .userId(UPDATED_USER_ID)
+            .organizationId(UPDATED_ORGANIZATION_ID)
             .imageUrl(UPDATED_IMAGE_URL)
             .size(UPDATED_SIZE)
             .duration(UPDATED_DURATION)
@@ -270,6 +278,7 @@ public class VideoResourceIntTest {
         assertThat(testVideo.getFileName()).isEqualTo(UPDATED_FILE_NAME);
         assertThat(testVideo.getUrl()).isEqualTo(UPDATED_URL);
         assertThat(testVideo.getUserId()).isEqualTo(UPDATED_USER_ID);
+        assertThat(testVideo.getOrganizationId()).isEqualTo(UPDATED_ORGANIZATION_ID);
         assertThat(testVideo.getImageUrl()).isEqualTo(UPDATED_IMAGE_URL);
         assertThat(testVideo.getSize()).isEqualTo(UPDATED_SIZE);
         assertThat(testVideo.getDuration()).isEqualTo(UPDATED_DURATION);

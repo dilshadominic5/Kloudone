@@ -1,9 +1,11 @@
 package com.xedflix.video.service;
 
+import com.amazonaws.services.apigateway.model.Op;
 import com.xedflix.video.client.user_service_apiclient.api.RoleResourceApiClient;
 import com.xedflix.video.client.user_service_apiclient.model.ActionPermissionForRole;
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.repository.VideoRepository;
+import com.xedflix.video.security.SecurityUtils;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import javax.persistence.EntityManager;
 import java.util.Optional;
 /**
  * Service Implementation for managing Video.
@@ -62,7 +65,7 @@ public class VideoService {
      * @param video the entity to update
      * @return the persisted entity
      */
-    public Video update(Video video) throws ActionNotSupportedException {
+    public Video update(Video video) throws ActionNotSupportedException, InstantiationException, IllegalAccessException {
         log.debug("Request to save Video : {}", video);
         ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
             roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
@@ -72,7 +75,12 @@ public class VideoService {
             throw new ActionNotSupportedException();
         }
 
-        return videoRepository.save(video);
+        Video videoToUpdate = videoRepository.getOne(video.getId());
+        Video newVideo = Video.merge(video, videoToUpdate);
+
+        log.debug("New video: {}", newVideo);
+
+        return videoRepository.save(newVideo);
     }
 
     /**
@@ -82,9 +90,21 @@ public class VideoService {
      * @return the list of entities
      */
     @Transactional(readOnly = true)
-    public Page<Video> findAll(Pageable pageable) {
+    public Page<Video> findAll(Pageable pageable) throws ActionNotSupportedException {
         log.debug("Request to get all Videos");
-        return videoRepository.findAll(pageable);
+
+        ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
+            roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
+
+        ActionPermissionForRole actionPermissionForRole = actionPermissionForRoleResponseEntity.getBody();
+        if(actionPermissionForRole != null && !actionPermissionForRole.isCanRead()) {
+            throw new ActionNotSupportedException();
+        }
+
+        Long userId = SecurityUtils.getCurrentUserId();
+        Long organizationId = SecurityUtils.getCurrentUserOrganizationId();
+
+        return videoRepository.findAllByUserIdAndOrganizationId(userId, organizationId, pageable);
     }
 
 
@@ -95,8 +115,17 @@ public class VideoService {
      * @return the entity
      */
     @Transactional(readOnly = true)
-    public Optional<Video> findOne(Long id) {
+    public Optional<Video> findOne(Long id) throws ActionNotSupportedException {
         log.debug("Request to get Video : {}", id);
+
+        ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
+            roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
+
+        ActionPermissionForRole actionPermissionForRole = actionPermissionForRoleResponseEntity.getBody();
+        if(actionPermissionForRole != null && !actionPermissionForRole.isCanRead()) {
+            throw new ActionNotSupportedException();
+        }
+
         return videoRepository.findById(id);
     }
 
@@ -105,8 +134,25 @@ public class VideoService {
      *
      * @param id the id of the entity
      */
-    public void delete(Long id) {
+    public void delete(Long id) throws ActionNotSupportedException {
         log.debug("Request to delete Video : {}", id);
+
+        ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
+            roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
+
+        ActionPermissionForRole actionPermissionForRole = actionPermissionForRoleResponseEntity.getBody();
+        if(actionPermissionForRole != null && !actionPermissionForRole.isCanRead()) {
+            throw new ActionNotSupportedException();
+        }
+
+        Optional<Video> videoOptional = videoRepository.findById(id);
+        if(videoOptional.isPresent()) {
+            Video video = videoOptional.get();
+            if(!video.getOrganizationId().equals(SecurityUtils.getCurrentUserOrganizationId())) {
+                throw new ActionNotSupportedException();
+            }
+        }
+
         videoRepository.deleteById(id);
     }
 }

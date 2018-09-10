@@ -11,4 +11,42 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {
 
+    private final S3 s3 = new S3();
+
+    public S3 getS3() {
+        return s3;
+    }
+
+    public static class S3 {
+
+        private final UserVideoUploads userVideoUploads = new UserVideoUploads();
+
+        public UserVideoUploads getUserVideoUploads() {
+            return userVideoUploads;
+        }
+
+        public static class UserVideoUploads {
+
+            private String bucket;
+
+            private String region;
+
+            public String getBucket() {
+                return bucket;
+            }
+
+            public void setBucket(String bucket) {
+                this.bucket = bucket;
+            }
+
+            public String getRegion() {
+                return region;
+            }
+
+            public void setRegion(String region) {
+                this.region = region;
+            }
+
+        }
+    }
 }

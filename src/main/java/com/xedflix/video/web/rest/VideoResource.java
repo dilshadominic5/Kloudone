@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -67,7 +68,7 @@ public class VideoResource {
      */
     @PostMapping("/videos")
     @Timed
-    public ResponseEntity<Video> createVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException {
+    public ResponseEntity<Video> createVideo(@Valid @RequestBody Video video) throws URISyntaxException, ActionNotSupportedException {
         log.debug("REST request to save Video : {}", video);
         if (video.getId() != null) {
             throw new BadRequestAlertException("A new video cannot already have an ID", ENTITY_NAME, "idexists");

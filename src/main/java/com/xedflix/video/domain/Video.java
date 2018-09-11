@@ -1,10 +1,10 @@
 package com.xedflix.video.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -27,19 +27,24 @@ public class Video implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    @NotNull
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "file_name")
+    @NotNull
+    @Column(name = "file_name", nullable = false)
     private String fileName;
+
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "url")
     private String url;
 
-    @Column(name = "user_id", updatable = false)
+    @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "organization_id", updatable = false)
+    @Column(name = "organization_id")
     private Long organizationId;
 
     @Column(name = "image_url")
@@ -51,7 +56,7 @@ public class Video implements Serializable {
     @Column(name = "duration")
     private Float duration;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at")
     private LocalDate createdAt;
 
     @Column(name = "updated_at")
@@ -93,6 +98,19 @@ public class Video implements Serializable {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Video description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getUrl() {
@@ -239,6 +257,7 @@ public class Video implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", fileName='" + getFileName() + "'" +
+            ", description='" + getDescription() + "'" +
             ", url='" + getUrl() + "'" +
             ", userId=" + getUserId() +
             ", organizationId=" + getOrganizationId() +
@@ -277,4 +296,5 @@ public class Video implements Serializable {
 
         return video;
     }
+
 }

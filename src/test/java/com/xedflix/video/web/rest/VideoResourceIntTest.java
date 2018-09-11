@@ -48,6 +48,9 @@ public class VideoResourceIntTest {
     private static final String DEFAULT_FILE_NAME = "AAAAAAAAAA";
     private static final String UPDATED_FILE_NAME = "BBBBBBBBBB";
 
+    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
+    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
+
     private static final String DEFAULT_URL = "AAAAAAAAAA";
     private static final String UPDATED_URL = "BBBBBBBBBB";
 
@@ -120,6 +123,7 @@ public class VideoResourceIntTest {
         Video video = new Video()
             .name(DEFAULT_NAME)
             .fileName(DEFAULT_FILE_NAME)
+            .description(DEFAULT_DESCRIPTION)
             .url(DEFAULT_URL)
             .userId(DEFAULT_USER_ID)
             .organizationId(DEFAULT_ORGANIZATION_ID)
@@ -154,6 +158,7 @@ public class VideoResourceIntTest {
         Video testVideo = videoList.get(videoList.size() - 1);
         assertThat(testVideo.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testVideo.getFileName()).isEqualTo(DEFAULT_FILE_NAME);
+        assertThat(testVideo.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testVideo.getUrl()).isEqualTo(DEFAULT_URL);
         assertThat(testVideo.getUserId()).isEqualTo(DEFAULT_USER_ID);
         assertThat(testVideo.getOrganizationId()).isEqualTo(DEFAULT_ORGANIZATION_ID);
@@ -186,6 +191,42 @@ public class VideoResourceIntTest {
 
     @Test
     @Transactional
+    public void checkNameIsRequired() throws Exception {
+        int databaseSizeBeforeTest = videoRepository.findAll().size();
+        // set the field null
+        video.setName(null);
+
+        // Create the Video, which fails.
+
+        restVideoMockMvc.perform(post("/api/videos")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(video)))
+            .andExpect(status().isBadRequest());
+
+        List<Video> videoList = videoRepository.findAll();
+        assertThat(videoList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    public void checkFileNameIsRequired() throws Exception {
+        int databaseSizeBeforeTest = videoRepository.findAll().size();
+        // set the field null
+        video.setFileName(null);
+
+        // Create the Video, which fails.
+
+        restVideoMockMvc.perform(post("/api/videos")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(video)))
+            .andExpect(status().isBadRequest());
+
+        List<Video> videoList = videoRepository.findAll();
+        assertThat(videoList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void getAllVideos() throws Exception {
         // Initialize the database
         videoRepository.saveAndFlush(video);
@@ -197,6 +238,7 @@ public class VideoResourceIntTest {
             .andExpect(jsonPath("$.[*].id").value(hasItem(video.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
             .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL.toString())))
             .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
             .andExpect(jsonPath("$.[*].organizationId").value(hasItem(DEFAULT_ORGANIZATION_ID.intValue())))
@@ -222,6 +264,7 @@ public class VideoResourceIntTest {
             .andExpect(jsonPath("$.id").value(video.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
             .andExpect(jsonPath("$.fileName").value(DEFAULT_FILE_NAME.toString()))
+            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
             .andExpect(jsonPath("$.url").value(DEFAULT_URL.toString()))
             .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()))
             .andExpect(jsonPath("$.organizationId").value(DEFAULT_ORGANIZATION_ID.intValue()))
@@ -255,6 +298,7 @@ public class VideoResourceIntTest {
         updatedVideo
             .name(UPDATED_NAME)
             .fileName(UPDATED_FILE_NAME)
+            .description(UPDATED_DESCRIPTION)
             .url(UPDATED_URL)
             .userId(UPDATED_USER_ID)
             .organizationId(UPDATED_ORGANIZATION_ID)
@@ -276,6 +320,7 @@ public class VideoResourceIntTest {
         Video testVideo = videoList.get(videoList.size() - 1);
         assertThat(testVideo.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testVideo.getFileName()).isEqualTo(UPDATED_FILE_NAME);
+        assertThat(testVideo.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testVideo.getUrl()).isEqualTo(UPDATED_URL);
         assertThat(testVideo.getUserId()).isEqualTo(UPDATED_USER_ID);
         assertThat(testVideo.getOrganizationId()).isEqualTo(UPDATED_ORGANIZATION_ID);

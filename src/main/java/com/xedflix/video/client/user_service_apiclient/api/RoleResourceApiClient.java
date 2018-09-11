@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-@FeignClient(name="${UserServiceAPIClient.name:UserServiceAPIClient}", url="${application.service.external.user-service.base-url}", configuration = ClientConfiguration.class)
+@FeignClient(name="${UserServiceAPIClient.name:UserServiceAPIClient}", url="${application.services.external.user-service.base-url}", configuration = ClientConfiguration.class)
 public interface RoleResourceApiClient extends RoleResourceApi {
     class RoleResourceApiClientFallback implements FallbackFactory<RoleResourceApiClient> {
 

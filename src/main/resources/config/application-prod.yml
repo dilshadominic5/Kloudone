@@ -149,4 +149,12 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+application:
+    s3:
+        user-video-uploads:
+            bucket: xedflix-video-uploads
+            region: us-west-2
+    services:
+        external:
+            user-service:
+                base-url: "http://gateway.xedflix.com/UserService"

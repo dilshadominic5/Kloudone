@@ -160,3 +160,7 @@ application:
         user-video-uploads:
             bucket: xedflix-video-uploads
             region: us-west-2
+    services:
+        external:
+            user-service:
+                base-url: "http://localhost:8083"

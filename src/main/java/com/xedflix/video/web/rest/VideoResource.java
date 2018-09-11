@@ -12,6 +12,7 @@ import com.xedflix.video.domain.Video;
 import com.xedflix.video.security.SecurityUtils;
 import com.xedflix.video.service.VideoService;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
+import com.xedflix.video.service.exceptions.ResourceNotFoundException;
 import com.xedflix.video.web.rest.errors.BadRequestAlertException;
 import com.xedflix.video.web.rest.util.HeaderUtil;
 import com.xedflix.video.web.rest.util.PaginationUtil;
@@ -28,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -66,7 +68,7 @@ public class VideoResource {
      */
     @PostMapping("/videos")
     @Timed
-    public ResponseEntity<Video> createVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException {
+    public ResponseEntity<Video> createVideo(@Valid @RequestBody Video video) throws URISyntaxException, ActionNotSupportedException {
         log.debug("REST request to save Video : {}", video);
         if (video.getId() != null) {
             throw new BadRequestAlertException("A new video cannot already have an ID", ENTITY_NAME, "idexists");
@@ -92,7 +94,7 @@ public class VideoResource {
      */
     @PutMapping("/videos")
     @Timed
-    public ResponseEntity<Video> updateVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException, IllegalAccessException, InstantiationException {
+    public ResponseEntity<Video> updateVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException, IllegalAccessException, InstantiationException, ResourceNotFoundException {
         log.debug("REST request to update Video : {}", video);
         if (video.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

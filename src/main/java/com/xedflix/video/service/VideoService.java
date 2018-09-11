@@ -7,6 +7,7 @@ import com.xedflix.video.domain.Video;
 import com.xedflix.video.repository.VideoRepository;
 import com.xedflix.video.security.SecurityUtils;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
+import com.xedflix.video.service.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ public class VideoService {
      * @param video the entity to update
      * @return the persisted entity
      */
-    public Video update(Video video) throws ActionNotSupportedException, InstantiationException, IllegalAccessException {
+    public Video update(Video video) throws ActionNotSupportedException, InstantiationException, IllegalAccessException, ResourceNotFoundException {
         log.debug("Request to save Video : {}", video);
         ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
             roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
@@ -75,7 +76,7 @@ public class VideoService {
             throw new ActionNotSupportedException();
         }
 
-        Video videoToUpdate = videoRepository.getOne(video.getId());
+        Video videoToUpdate = videoRepository.findById(video.getId()).orElseThrow(ResourceNotFoundException::new);
         Video newVideo = Video.merge(video, videoToUpdate);
 
         log.debug("New video: {}", newVideo);

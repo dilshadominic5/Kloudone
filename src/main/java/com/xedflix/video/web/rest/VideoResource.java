@@ -142,7 +142,7 @@ public class VideoResource {
      */
     @DeleteMapping("/videos/{id}")
     @Timed
-    public ResponseEntity<Void> deleteVideo(@PathVariable Long id) throws ActionNotSupportedException {
+    public ResponseEntity<Void> deleteVideo(@PathVariable Long id) throws ActionNotSupportedException, ResourceNotFoundException {
         log.debug("REST request to delete Video : {}", id);
         videoService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();

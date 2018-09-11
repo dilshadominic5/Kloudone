@@ -92,7 +92,7 @@ public class VideoService {
             throw new ActionNotSupportedException();
         }
 
-        Video videoToUpdate = videoRepository.findById(video.getId()).orElseThrow(ResourceNotFoundException::new);
+        Video videoToUpdate = videoRepository.findOneByIdAndOrganizationId(video.getId(), SecurityUtils.getCurrentUserOrganizationId()).orElseThrow(ResourceNotFoundException::new);
         Video newVideo = Video.merge(video, videoToUpdate);
 
         log.debug("New video: {}", newVideo);
@@ -143,7 +143,7 @@ public class VideoService {
             throw new ActionNotSupportedException();
         }
 
-        return videoRepository.findById(id);
+        return videoRepository.findOneByIdAndOrganizationId(id, SecurityUtils.getCurrentUserOrganizationId());
     }
 
     /**
@@ -151,25 +151,19 @@ public class VideoService {
      *
      * @param id the id of the entity
      */
-    public void delete(Long id) throws ActionNotSupportedException {
+    public void delete(Long id) throws ActionNotSupportedException, ResourceNotFoundException {
         log.debug("Request to delete Video : {}", id);
 
         ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
             roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
 
+        // Throw exception if the user is not allowed to perform the action.
         ActionPermissionForRole actionPermissionForRole = actionPermissionForRoleResponseEntity.getBody();
-        if(actionPermissionForRole != null && !actionPermissionForRole.isCanRead()) {
+        if(actionPermissionForRole != null && !actionPermissionForRole.isCanDelete()) {
             throw new ActionNotSupportedException();
         }
 
-        Optional<Video> videoOptional = videoRepository.findById(id);
-        if(videoOptional.isPresent()) {
-            Video video = videoOptional.get();
-            if(!video.getOrganizationId().equals(SecurityUtils.getCurrentUserOrganizationId())) {
-                throw new ActionNotSupportedException();
-            }
-        }
-
+        videoRepository.findOneByIdAndOrganizationId(id, SecurityUtils.getCurrentUserOrganizationId()).orElseThrow(ResourceNotFoundException::new);
         videoRepository.deleteById(id);
     }
 

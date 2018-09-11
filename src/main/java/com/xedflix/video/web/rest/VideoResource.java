@@ -12,6 +12,7 @@ import com.xedflix.video.domain.Video;
 import com.xedflix.video.security.SecurityUtils;
 import com.xedflix.video.service.VideoService;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
+import com.xedflix.video.service.exceptions.ResourceNotFoundException;
 import com.xedflix.video.web.rest.errors.BadRequestAlertException;
 import com.xedflix.video.web.rest.util.HeaderUtil;
 import com.xedflix.video.web.rest.util.PaginationUtil;
@@ -92,7 +93,7 @@ public class VideoResource {
      */
     @PutMapping("/videos")
     @Timed
-    public ResponseEntity<Video> updateVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException, IllegalAccessException, InstantiationException {
+    public ResponseEntity<Video> updateVideo(@RequestBody Video video) throws URISyntaxException, ActionNotSupportedException, IllegalAccessException, InstantiationException, ResourceNotFoundException {
         log.debug("REST request to update Video : {}", video);
         if (video.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

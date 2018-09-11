@@ -158,33 +158,9 @@ public class VideoResource {
      */
     // TODO: Need to move to service.
     @GetMapping("/videos/generate-pre-signed-url")
-    public ResponseEntity<PresignedUrlVM> generatePreSignedUrl(@RequestParam(value = "filename") String fileName, @RequestParam( value = "type") String type) {
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-            .withCredentials(new ProfileCredentialsProvider())
-            .withRegion(applicationProperties.getS3().getUserVideoUploads().getRegion())
-            .build();
+    public ResponseEntity<PresignedUrlVM> generatePreSignedUrl(@RequestParam(value = "filename") String fileName, @RequestParam( value = "type") String type) throws ActionNotSupportedException {
 
-        UUID uuid = UUID.randomUUID();
-        String uuidString = uuid.toString();
-        String extension = FilenameUtils.getExtension(fileName);
-        uuidString += "." + extension;
-
-        Date expiration = new Date();
-        long expTimeMillis = expiration.getTime();
-        // Expire after ten minutes
-        expTimeMillis += 1000 * 10 * 60;
-        expiration.setTime(expTimeMillis);
-
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-            new GeneratePresignedUrlRequest(applicationProperties.getS3().getUserVideoUploads().getBucket(), uuidString)
-                .withMethod(HttpMethod.PUT)
-                .withExpiration(expiration);
-        URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
-
-        PresignedUrlVM presignedUrlVM = new PresignedUrlVM();
-        presignedUrlVM.setUrl(url.toString());
-        presignedUrlVM.setNewName(uuidString);
-        presignedUrlVM.setExpiresIn(expiration.getTime());
+        PresignedUrlVM presignedUrlVM = new PresignedUrlVM(videoService.generatePresignedUrl(fileName));
 
         return ResponseEntity.ok(presignedUrlVM);
     }

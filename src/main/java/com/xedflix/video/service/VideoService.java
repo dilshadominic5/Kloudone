@@ -1,13 +1,21 @@
 package com.xedflix.video.service;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.apigateway.model.Op;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.xedflix.video.client.user_service_apiclient.api.RoleResourceApiClient;
 import com.xedflix.video.client.user_service_apiclient.model.ActionPermissionForRole;
+import com.xedflix.video.config.ApplicationProperties;
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.repository.VideoRepository;
 import com.xedflix.video.security.SecurityUtils;
+import com.xedflix.video.service.dto.PresignedUrlDTO;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
 import com.xedflix.video.service.exceptions.ResourceNotFoundException;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +28,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import javax.persistence.EntityManager;
+import javax.validation.constraints.NotNull;
+import java.net.URL;
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
+
 /**
  * Service Implementation for managing Video.
  */
@@ -36,6 +49,9 @@ public class VideoService {
 
     @Autowired
     private RoleResourceApiClient roleResourceApiClient;
+
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
     public VideoService(VideoRepository videoRepository) {
         this.videoRepository = videoRepository;
@@ -155,5 +171,45 @@ public class VideoService {
         }
 
         videoRepository.deleteById(id);
+    }
+
+    public PresignedUrlDTO generatePresignedUrl(@NotNull String fileName) throws ActionNotSupportedException {
+
+        ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
+            roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
+
+        ActionPermissionForRole actionPermissionForRole = actionPermissionForRoleResponseEntity.getBody();
+        if(actionPermissionForRole != null && !actionPermissionForRole.isCanCreate()) {
+            throw new ActionNotSupportedException();
+        }
+
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+            .withCredentials(new ProfileCredentialsProvider())
+            .withRegion(applicationProperties.getS3().getUserVideoUploads().getRegion())
+            .build();
+
+        UUID uuid = UUID.randomUUID();
+        String uuidString = uuid.toString();
+        String extension = FilenameUtils.getExtension(fileName);
+        uuidString += "." + extension;
+
+        Date expiration = new Date();
+        long expTimeMillis = expiration.getTime();
+        // Expire after ten minutes
+        expTimeMillis += 1000 * 10 * 60;
+        expiration.setTime(expTimeMillis);
+
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+            new GeneratePresignedUrlRequest(applicationProperties.getS3().getUserVideoUploads().getBucket(), uuidString)
+                .withMethod(HttpMethod.PUT)
+                .withExpiration(expiration);
+        URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+
+        PresignedUrlDTO presignedUrlDTO = new PresignedUrlDTO();
+        presignedUrlDTO.setUrl(url.toString());
+        presignedUrlDTO.setNewName(uuidString);
+        presignedUrlDTO.setExpiresIn(expiration.getTime());
+
+        return presignedUrlDTO;
     }
 }

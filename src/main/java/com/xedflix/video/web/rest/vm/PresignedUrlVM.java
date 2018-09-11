@@ -1,31 +1,11 @@
 package com.xedflix.video.web.rest.vm;
 
-public class PresignedUrlVM {
-    private String url;
-    private String newName;
-    private Long expiresIn;
+import com.xedflix.video.service.dto.PresignedUrlDTO;
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getNewName() {
-        return newName;
-    }
-
-    public void setNewName(String newName) {
-        this.newName = newName;
-    }
-
-    public Long getExpiresIn() {
-        return expiresIn;
-    }
-
-    public void setExpiresIn(Long expiresIn) {
-        this.expiresIn = expiresIn;
+public class PresignedUrlVM extends PresignedUrlDTO {
+    public PresignedUrlVM(PresignedUrlDTO presignedUrlDTO) {
+        this.setNewName(presignedUrlDTO.getNewName());
+        this.setExpiresIn(presignedUrlDTO.getExpiresIn());
+        this.setUrl(presignedUrlDTO.getUrl());
     }
 }

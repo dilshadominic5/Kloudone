@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 
+import java.util.Optional;
+
 /**
  * Spring Data  repository for the Video entity.
  */
@@ -13,6 +15,8 @@ import org.springframework.data.domain.Page;
 @Repository
 public interface VideoRepository extends JpaRepository<Video, Long> {
 
-    public Page<Video> findAllByUserIdAndOrganizationId(Long userId, Long OrganizationId, Pageable pageable);
+    public Page<Video> findAllByUserIdAndOrganizationId(Long userId, Long organizationId, Pageable pageable);
+
+    public Optional<Video> findOneByIdAndOrganizationId(Long userId, Long organizationId);
 
 }

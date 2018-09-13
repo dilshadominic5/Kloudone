@@ -22,13 +22,20 @@ public class AppDevConf {
         return new RoleResourceApiClient() {
             @Override
             public ResponseEntity<ActionPermissionForRole> getPermissionForRoleOnActionItemUsingGET(@NotNull @Valid String actionItem) {
-                log.info("calling local bean in dev profile");
-                return null;
+//                log.info("calling local bean in dev profile");
+
+                ActionPermissionForRole actionPermissionForRole = new ActionPermissionForRole();
+                actionPermissionForRole.setCanCreate(true);
+                actionPermissionForRole.setCanRead(true);
+                actionPermissionForRole.setCanDelete(true);
+                actionPermissionForRole.setCanUpdate(true);
+
+                return ResponseEntity.ok(actionPermissionForRole);
             }
 
             @Override
             public ResponseEntity<UserRole> getRoleOfUserUsingGET() {
-                log.info("calling local bean in dev profile");
+//                log.info("calling local bean in dev profile");
                 return null;
             }
         };

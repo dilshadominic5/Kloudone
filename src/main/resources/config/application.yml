@@ -15,14 +15,14 @@
 # ===================================================================
 
 eureka:
-    client:
-        enabled: true
-        healthcheck:
-            enabled: true
-        fetch-registry: true
-        register-with-eureka: true
-        instance-info-replication-interval-seconds: 10
-        registry-fetch-interval-seconds: 10
+#    client:
+#        enabled: true
+#        healthcheck:
+#            enabled: true
+#        fetch-registry: true
+#        register-with-eureka: true
+#        instance-info-replication-interval-seconds: 10
+#        registry-fetch-interval-seconds: 10
     instance:
         appname: XedflixVideoService
         instanceId: XedflixVideoService:${spring.application.instance-id:${random.value}}
@@ -37,12 +37,12 @@ eureka:
             git-version: ${git.commit.id.describe:}
             git-commit: ${git.commit.id.abbrev:}
             git-branch: ${git.branch:}
-ribbon:
-    eureka:
-        enabled: true
-feign:
-    hystrix:
-        enabled: true
+#ribbon:
+#    eureka:
+#        enabled: true
+#feign:
+#    hystrix:
+#        enabled: true
 #    client:
 #        config:
 #            default:

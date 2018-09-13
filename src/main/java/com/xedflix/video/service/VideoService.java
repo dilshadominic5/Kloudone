@@ -49,15 +49,15 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
 
-//    @Autowired
-    private final RoleResourceApiClient roleResourceApiClient;
+    @Autowired
+    private RoleResourceApiClient roleResourceApiClient;
 
-//    @Autowired
-    private final ApplicationProperties applicationProperties;
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
-//    public VideoService(VideoRepository videoRepository) {
-//        this.videoRepository = videoRepository;
-//    }
+    public VideoService(VideoRepository videoRepository) {
+        this.videoRepository = videoRepository;
+    }
 
     /**
      * Save a video.
@@ -165,7 +165,11 @@ public class VideoService {
             throw new ActionNotSupportedException();
         }
 
-        videoRepository.findOneByIdAndOrganizationId(id, SecurityUtils.getCurrentUserOrganizationId()).orElseThrow(ResourceNotFoundException::new);
+        Long orgId = SecurityUtils.getCurrentUserOrganizationId();
+        System.out.println(id);
+        System.out.println(orgId);
+
+        videoRepository.findOneByIdAndOrganizationId(id, orgId).orElseThrow(ResourceNotFoundException::new);
         videoRepository.deleteById(id);
     }
 

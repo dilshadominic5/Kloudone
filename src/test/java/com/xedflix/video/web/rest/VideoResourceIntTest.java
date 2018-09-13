@@ -70,9 +70,6 @@ public class VideoResourceIntTest {
 
     private static final Long DEFAULT_USER_ID = 9L;
 
-    private static final Long AUTH_USER_ID = 9L;
-    private static final Long AUTH_ORG_ID = 2L;
-
     private static final Long DEFAULT_ORGANIZATION_ID = 2L;
 
     private static final String DEFAULT_IMAGE_URL = "AAAAAAAAAA";
@@ -85,7 +82,6 @@ public class VideoResourceIntTest {
     private static final Float UPDATED_DURATION = 2F;
 
     private static final LocalDate DEFAULT_CREATED_AT = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_CREATED_AT = LocalDate.now(ZoneId.systemDefault());
 
     private static final LocalDate DEFAULT_UPDATED_AT = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_UPDATED_AT = LocalDate.now(ZoneId.systemDefault());
@@ -133,18 +129,15 @@ public class VideoResourceIntTest {
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put(UserDetailsConstants.ORG_ID, AUTH_USER_ID);
-        claims.put(UserDetailsConstants.ID, AUTH_ORG_ID);
+        claims.put(UserDetailsConstants.ORG_ID, DEFAULT_ORGANIZATION_ID);
+        claims.put(UserDetailsConstants.ID, DEFAULT_USER_ID);
 
         Authentication authentication = new UserNamePasswordAuthenticationTokenExtended(
             "mohsal",
             "saleem",
-            grantedAuthorities,
-            claims
+            grantedAuthorities
         );
-        token = this.tokenProvider.createToken(authentication, true);
-
-        System.out.println("Token: " + token);
+        token = this.tokenProvider.createTokenWithClaims(authentication, true, claims);
 
         this.restVideoMockMvc = MockMvcBuilders.standaloneSetup(videoResource)
             .apply(SecurityMockMvcConfigurers.springSecurity(springSecurityFilterChain))
@@ -192,7 +185,7 @@ public class VideoResourceIntTest {
         restVideoMockMvc.perform(
             post("/api/videos")
                 .header("Authorization",
-                    "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb2hzYWwiLCJhdXRoIjoiUk9MRV9VU0VSIiwib3JnYW5pemF0aW9uSWQiOjIsImZpcnN0TmFtZSI6Ik1vaGFtZWQiLCJsYXN0TmFtZSI6IlNhbGVlbSIsInJvbGUiOiJPUkdfU1VQRVJfQURNSU4iLCJpZCI6OSwibG9naW4iOiJtb2hzYWwiLCJlbWFpbCI6InNhbGVlbUB4ZWRmbGl4LmNvbSIsImV4cCI6MTUzOTE3NTMyOX0.vDW3y7G7QrubjbXSJ6vJ4HXbzqw4eW9fz-S6npFMX8QrPlBzzTJ-Y2jyo8vnj0kCV6ahkkCRuo45S20MuzE5vA")
+                    "Bearer " + token)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(video))
         ).andExpect(status().isCreated());
@@ -226,6 +219,8 @@ public class VideoResourceIntTest {
         // An entity with an existing ID cannot be created, so this API call must fail
         restVideoMockMvc.perform(post("/api/videos")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .header("Authorization",
+                "Bearer " + token)
             .content(TestUtil.convertObjectToJsonBytes(video)))
             .andExpect(status().isBadRequest());
 
@@ -245,6 +240,8 @@ public class VideoResourceIntTest {
 
         restVideoMockMvc.perform(post("/api/videos")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .header("Authorization",
+                "Bearer " + token)
             .content(TestUtil.convertObjectToJsonBytes(video)))
             .andExpect(status().isBadRequest());
 
@@ -263,6 +260,8 @@ public class VideoResourceIntTest {
 
         restVideoMockMvc.perform(post("/api/videos")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .header("Authorization",
+                "Bearer " + token)
             .content(TestUtil.convertObjectToJsonBytes(video)))
             .andExpect(status().isBadRequest());
 
@@ -277,7 +276,10 @@ public class VideoResourceIntTest {
         videoRepository.saveAndFlush(video);
 
         // Get all the videoList
-        restVideoMockMvc.perform(get("/api/videos?sort=id,desc"))
+        restVideoMockMvc.perform(
+            get("/api/videos?sort=id,desc")
+            .header("Authorization",
+                "Bearer " + token))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(video.getId().intValue())))
@@ -303,7 +305,10 @@ public class VideoResourceIntTest {
         videoRepository.saveAndFlush(video);
 
         // Get the video
-        restVideoMockMvc.perform(get("/api/videos/{id}", video.getId()))
+        restVideoMockMvc.perform(
+            get("/api/videos/{id}", video.getId())
+            .header("Authorization",
+                "Bearer " + token))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(video.getId().intValue()))
@@ -324,7 +329,9 @@ public class VideoResourceIntTest {
     @Transactional
     public void getNonExistingVideo() throws Exception {
         // Get the video
-        restVideoMockMvc.perform(get("/api/videos/{id}", Long.MAX_VALUE))
+        restVideoMockMvc.perform(get("/api/videos/{id}", Long.MAX_VALUE)
+            .header("Authorization",
+                "Bearer " + token))
             .andExpect(status().isNotFound());
     }
 
@@ -348,11 +355,12 @@ public class VideoResourceIntTest {
             .imageUrl(UPDATED_IMAGE_URL)
             .size(UPDATED_SIZE)
             .duration(UPDATED_DURATION)
-            .createdAt(UPDATED_CREATED_AT)
             .updatedAt(UPDATED_UPDATED_AT)
             .isArchived(UPDATED_IS_ARCHIVED);
 
         restVideoMockMvc.perform(put("/api/videos")
+            .header("Authorization",
+            "Bearer " + token)
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(updatedVideo)))
             .andExpect(status().isOk());
@@ -368,7 +376,6 @@ public class VideoResourceIntTest {
         assertThat(testVideo.getImageUrl()).isEqualTo(UPDATED_IMAGE_URL);
         assertThat(testVideo.getSize()).isEqualTo(UPDATED_SIZE);
         assertThat(testVideo.getDuration()).isEqualTo(UPDATED_DURATION);
-        assertThat(testVideo.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
         assertThat(testVideo.getUpdatedAt()).isEqualTo(UPDATED_UPDATED_AT);
         assertThat(testVideo.isIsArchived()).isEqualTo(UPDATED_IS_ARCHIVED);
     }
@@ -382,6 +389,8 @@ public class VideoResourceIntTest {
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException 
         restVideoMockMvc.perform(put("/api/videos")
+            .header("Authorization",
+                "Bearer " + token)
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(video)))
             .andExpect(status().isBadRequest());
@@ -399,8 +408,15 @@ public class VideoResourceIntTest {
 
         int databaseSizeBeforeDelete = videoRepository.findAll().size();
 
+        videoRepository.findAll().forEach(video1 -> {
+            System.out.println(video1.getId());
+            System.out.println(video1.getOrganizationId());
+        });
+
         // Get the video
         restVideoMockMvc.perform(delete("/api/videos/{id}", video.getId())
+            .header("Authorization",
+                "Bearer " + token)
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 

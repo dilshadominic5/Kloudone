@@ -4,6 +4,11 @@ import com.xedflix.video.XedflixVideoServiceApp;
 
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.repository.VideoRepository;
+import com.xedflix.video.security.AuthoritiesConstants;
+import com.xedflix.video.security.SecurityUtils;
+import com.xedflix.video.security.UserDetailsConstants;
+import com.xedflix.video.security.UserNamePasswordAuthenticationTokenExtended;
+import com.xedflix.video.security.jwt.TokenProvider;
 import com.xedflix.video.service.VideoService;
 import com.xedflix.video.web.rest.errors.ExceptionTranslator;
 
@@ -16,6 +21,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -24,12 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
+import java.util.*;
 
 
 import static com.xedflix.video.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -40,6 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = XedflixVideoServiceApp.class)
+@ActiveProfiles("dev")
 public class VideoResourceIntTest {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
@@ -54,11 +68,12 @@ public class VideoResourceIntTest {
     private static final String DEFAULT_URL = "AAAAAAAAAA";
     private static final String UPDATED_URL = "BBBBBBBBBB";
 
-    private static final Long DEFAULT_USER_ID = 1L;
-    private static final Long UPDATED_USER_ID = 2L;
+    private static final Long DEFAULT_USER_ID = 9L;
 
-    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
-    private static final Long UPDATED_ORGANIZATION_ID = 2L;
+    private static final Long AUTH_USER_ID = 9L;
+    private static final Long AUTH_ORG_ID = 2L;
+
+    private static final Long DEFAULT_ORGANIZATION_ID = 2L;
 
     private static final String DEFAULT_IMAGE_URL = "AAAAAAAAAA";
     private static final String UPDATED_IMAGE_URL = "BBBBBBBBBB";
@@ -81,7 +96,8 @@ public class VideoResourceIntTest {
     @Autowired
     private VideoRepository videoRepository;
 
-    
+    @Autowired
+    private FilterChainProxy springSecurityFilterChain;
 
     @Autowired
     private VideoService videoService;
@@ -98,6 +114,11 @@ public class VideoResourceIntTest {
     @Autowired
     private EntityManager em;
 
+    @Autowired
+    private TokenProvider tokenProvider;
+
+    private String token;
+
     private MockMvc restVideoMockMvc;
 
     private Video video;
@@ -106,11 +127,32 @@ public class VideoResourceIntTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         final VideoResource videoResource = new VideoResource(videoService);
+
+        ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(UserDetailsConstants.ORG_ID, AUTH_USER_ID);
+        claims.put(UserDetailsConstants.ID, AUTH_ORG_ID);
+
+        Authentication authentication = new UserNamePasswordAuthenticationTokenExtended(
+            "mohsal",
+            "saleem",
+            grantedAuthorities,
+            claims
+        );
+        token = this.tokenProvider.createToken(authentication, true);
+
+        System.out.println("Token: " + token);
+
         this.restVideoMockMvc = MockMvcBuilders.standaloneSetup(videoResource)
+            .apply(SecurityMockMvcConfigurers.springSecurity(springSecurityFilterChain))
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
             .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter).build();
+            .setMessageConverters(jacksonMessageConverter)
+            .build();
     }
 
     /**
@@ -147,10 +189,13 @@ public class VideoResourceIntTest {
         int databaseSizeBeforeCreate = videoRepository.findAll().size();
 
         // Create the Video
-        restVideoMockMvc.perform(post("/api/videos")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(video)))
-            .andExpect(status().isCreated());
+        restVideoMockMvc.perform(
+            post("/api/videos")
+                .header("Authorization",
+                    "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb2hzYWwiLCJhdXRoIjoiUk9MRV9VU0VSIiwib3JnYW5pemF0aW9uSWQiOjIsImZpcnN0TmFtZSI6Ik1vaGFtZWQiLCJsYXN0TmFtZSI6IlNhbGVlbSIsInJvbGUiOiJPUkdfU1VQRVJfQURNSU4iLCJpZCI6OSwibG9naW4iOiJtb2hzYWwiLCJlbWFpbCI6InNhbGVlbUB4ZWRmbGl4LmNvbSIsImV4cCI6MTUzOTE3NTMyOX0.vDW3y7G7QrubjbXSJ6vJ4HXbzqw4eW9fz-S6npFMX8QrPlBzzTJ-Y2jyo8vnj0kCV6ahkkCRuo45S20MuzE5vA")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(video))
+        ).andExpect(status().isCreated());
 
         // Validate the Video in the database
         List<Video> videoList = videoRepository.findAll();
@@ -300,8 +345,6 @@ public class VideoResourceIntTest {
             .fileName(UPDATED_FILE_NAME)
             .description(UPDATED_DESCRIPTION)
             .url(UPDATED_URL)
-            .userId(UPDATED_USER_ID)
-            .organizationId(UPDATED_ORGANIZATION_ID)
             .imageUrl(UPDATED_IMAGE_URL)
             .size(UPDATED_SIZE)
             .duration(UPDATED_DURATION)
@@ -322,8 +365,6 @@ public class VideoResourceIntTest {
         assertThat(testVideo.getFileName()).isEqualTo(UPDATED_FILE_NAME);
         assertThat(testVideo.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testVideo.getUrl()).isEqualTo(UPDATED_URL);
-        assertThat(testVideo.getUserId()).isEqualTo(UPDATED_USER_ID);
-        assertThat(testVideo.getOrganizationId()).isEqualTo(UPDATED_ORGANIZATION_ID);
         assertThat(testVideo.getImageUrl()).isEqualTo(UPDATED_IMAGE_URL);
         assertThat(testVideo.getSize()).isEqualTo(UPDATED_SIZE);
         assertThat(testVideo.getDuration()).isEqualTo(UPDATED_DURATION);

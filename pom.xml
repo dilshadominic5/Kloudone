@@ -385,9 +385,6 @@
             <version>1.18.2</version>
             <scope>provided</scope>
         </dependency>
-
-
-
     </dependencies>
 
     <build>

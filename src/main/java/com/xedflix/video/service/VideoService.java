@@ -15,6 +15,7 @@ import com.xedflix.video.security.SecurityUtils;
 import com.xedflix.video.service.dto.PresignedUrlDTO;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
 import com.xedflix.video.service.exceptions.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import java.util.UUID;
 /**
  * Service Implementation for managing Video.
  */
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class VideoService {
@@ -47,15 +49,15 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
 
-    @Autowired
-    private RoleResourceApiClient roleResourceApiClient;
+//    @Autowired
+    private final RoleResourceApiClient roleResourceApiClient;
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
+//    @Autowired
+    private final ApplicationProperties applicationProperties;
 
-    public VideoService(VideoRepository videoRepository) {
-        this.videoRepository = videoRepository;
-    }
+//    public VideoService(VideoRepository videoRepository) {
+//        this.videoRepository = videoRepository;
+//    }
 
     /**
      * Save a video.

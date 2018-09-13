@@ -5,12 +5,14 @@ import com.xedflix.video.client.user_service_apiclient.model.UserRole;
 import feign.hystrix.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import com.xedflix.video.client.user_service_apiclient.ClientConfiguration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+@Profile("prod")
 @FeignClient(name="${UserServiceAPIClient.name:UserServiceAPIClient}", url="${application.services.external.user-service.base-url}", configuration = ClientConfiguration.class)
 public interface RoleResourceApiClient extends RoleResourceApi {
     class RoleResourceApiClientFallback implements FallbackFactory<RoleResourceApiClient> {

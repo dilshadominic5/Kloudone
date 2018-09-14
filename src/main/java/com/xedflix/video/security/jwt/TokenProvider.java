@@ -1,5 +1,6 @@
 package com.xedflix.video.security.jwt;
 
+import com.xedflix.video.security.UserNamePasswordAuthenticationTokenExtended;
 import io.github.jhipster.config.JHipsterProperties;
 
 import java.nio.charset.StandardCharsets;
@@ -72,6 +73,28 @@ public class TokenProvider {
             .compact();
     }
 
+    public String createTokenWithClaims(Authentication authentication, boolean rememberMe, Map<String, Object> claims) {
+        String authorities = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(","));
+
+        long now = (new Date()).getTime();
+        Date validity;
+        if (rememberMe) {
+            validity = new Date(now + this.tokenValidityInMillisecondsForRememberMe);
+        } else {
+            validity = new Date(now + this.tokenValidityInMilliseconds);
+        }
+
+        return Jwts.builder()
+            .setSubject(authentication.getName())
+            .claim(AUTHORITIES_KEY, authorities)
+            .addClaims(claims)
+            .signWith(SignatureAlgorithm.HS512, secretKey)
+            .setExpiration(validity)
+            .compact();
+    }
+
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(secretKey)
@@ -85,7 +108,16 @@ public class TokenProvider {
 
         User principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        Map<String, Object> claimsMap = claims
+            .entrySet()
+            .stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        UserNamePasswordAuthenticationTokenExtended userNamePasswordAuthenticationTokenExtended =
+            new UserNamePasswordAuthenticationTokenExtended(principal, token, authorities, claims);
+        userNamePasswordAuthenticationTokenExtended.setDetails(claimsMap);
+
+        return userNamePasswordAuthenticationTokenExtended;
     }
 
     public boolean validateToken(String authToken) {

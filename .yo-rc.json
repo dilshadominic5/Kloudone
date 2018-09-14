@@ -29,5 +29,11 @@
     "clientPackageManager": "yarn",
     "skipClient": true,
     "skipUserManagement": true
+  },
+  "generator-jhipster-swagger-cli": {
+    "promptValues": {
+      "inputSpec": "http://localhost:8083/v2/api-docs",
+      "cliName": "UserServiceAPIClient"
+    }
   }
 }

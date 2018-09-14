@@ -1,9 +1,11 @@
 package com.xedflix.video.security;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -72,5 +74,25 @@ public final class SecurityUtils {
             .map(authentication -> authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority)))
             .orElse(false);
+    }
+
+    public static Long getCurrentUserId() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Map<String, Object> details = (Map<String, Object>) authentication.getDetails();
+        return ((Integer)details.get(UserDetailsConstants.ID)).longValue();
+    }
+
+    public static Long getCurrentUserOrganizationId() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Map<String, Object> details = (Map<String, Object>) authentication.getDetails();
+        return ((Integer)details.getOrDefault(UserDetailsConstants.ORG_ID, -1)).longValue();
+    }
+
+    public static Map<String, Object> getCurrentUserDetails() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        return (Map<String, Object>) authentication.getDetails();
     }
 }

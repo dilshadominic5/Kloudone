@@ -19,6 +19,13 @@ logging:
         com.xedflix.video: INFO
         io.github.jhipster: INFO
 
+eureka:
+    instance:
+        prefer-ip-address: true
+    client:
+        service-url:
+            defaultZone: http://admin:${jhipster.registry.password}@registry.xedflix.com:8761/eureka/
+
 spring:
     devtools:
         restart:
@@ -28,6 +35,8 @@ spring:
     jpa:
         datasource:
             type: com.zaxxer.hikari.HikariDataSource
+            username: root
+            password: t#fJv0{76|$]zZs
             url: jdbc:mysql://localhost:3306/XedflixVideoService?useUnicode=true&characterEncoding=utf8&useSSL=false
             hikari:
                 data-source-properties:

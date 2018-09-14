@@ -24,7 +24,7 @@ eureka:
         instance-info-replication-interval-seconds: 10
         registry-fetch-interval-seconds: 10
         service-url:
-    defaultZone: http://admin:${jhipster.registry.password}@registry.xedflix.com:8761/eureka/
+            defaultZone: http://admin:${jhipster.registry.password}@registry.xedflix.com:8761/eureka/
     instance:
         appname: XedflixVideoService
         instanceId: XedflixVideoService:${spring.application.instance-id:${random.value}}
@@ -40,17 +40,17 @@ eureka:
             git-version: ${git.commit.id.describe:}
             git-commit: ${git.commit.id.abbrev:}
             git-branch: ${git.branch:}
-#ribbon:
-#    eureka:
-#        enabled: true
-#feign:
-#    hystrix:
-#        enabled: true
-#    client:
-#        config:
-#            default:
-#                connectTimeout: 5000
-#                readTimeout: 5000
+ribbon:
+    eureka:
+        enabled: true
+feign:
+    hystrix:
+        enabled: true
+    client:
+        config:
+            default:
+                connectTimeout: 5000
+                readTimeout: 5000
 
 # See https://github.com/Netflix/Hystrix/wiki/Configuration
 hystrix:

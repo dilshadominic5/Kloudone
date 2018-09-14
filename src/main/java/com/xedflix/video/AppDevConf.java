@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-@Profile("dev")
+@Profile({"dev", "test"})
 @Slf4j
 @Configuration
 public class AppDevConf {

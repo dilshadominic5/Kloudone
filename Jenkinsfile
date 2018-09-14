@@ -35,7 +35,7 @@ node {
 //    }
 
     stage('quality analysis') {
-        withSonarQubeEnv('http://sonarqube.xedflix.com') {
+        withSonarQubeEnv('Sonar') {
             sh "./mvnw sonar:sonar -Dsonar.host.url=http://sonarqube.xedflix.com -Dsonar.login=c923f5d637e3171d273186b9b66df095854c6bf1"
         }
     }

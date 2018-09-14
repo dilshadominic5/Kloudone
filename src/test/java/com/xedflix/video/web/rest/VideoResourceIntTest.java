@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = XedflixVideoServiceApp.class)
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 public class VideoResourceIntTest {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";

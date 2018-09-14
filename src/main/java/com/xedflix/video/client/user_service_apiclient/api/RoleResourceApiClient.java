@@ -8,6 +8,7 @@ import com.xedflix.video.client.user_service_apiclient.ClientConfiguration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotNull;
     fallbackFactory = RoleResourceApiClient.RoleResourceApiClientFallback.class
 )
 public interface RoleResourceApiClient extends RoleResourceApi {
+    @Component
     class RoleResourceApiClientFallback implements FallbackFactory<RoleResourceApiClient> {
 
         @Override

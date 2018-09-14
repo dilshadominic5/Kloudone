@@ -26,6 +26,15 @@ spring:
         livereload:
             enabled: false
     jpa:
+        datasource:
+            type: com.zaxxer.hikari.HikariDataSource
+            url: jdbc:mysql://localhost:3306/XedflixVideoService?useUnicode=true&characterEncoding=utf8&useSSL=false
+            hikari:
+                data-source-properties:
+                    cachePrepStmts: true
+                    prepStmtCacheSize: 250
+                    prepStmtCacheSqlLimit: 2048
+                    useServerPrepStmts: true
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         database: MYSQL
         show-sql: false

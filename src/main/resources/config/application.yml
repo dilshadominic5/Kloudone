@@ -15,6 +15,16 @@
 # ===================================================================
 
 eureka:
+    client:
+        enabled: true
+        healthcheck:
+            enabled: true
+        fetch-registry: true
+        register-with-eureka: true
+        instance-info-replication-interval-seconds: 10
+        registry-fetch-interval-seconds: 10
+        service-url:
+    defaultZone: http://admin:${jhipster.registry.password}@registry.xedflix.com:8761/eureka/
     instance:
         appname: XedflixVideoService
         instanceId: XedflixVideoService:${spring.application.instance-id:${random.value}}

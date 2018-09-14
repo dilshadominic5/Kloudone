@@ -13,7 +13,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Profile("prod")
-@FeignClient(name="${UserServiceAPIClient.name:UserServiceAPIClient}", url="${application.services.external.user-service.base-url}", configuration = ClientConfiguration.class)
+@FeignClient(
+    name="${UserServiceAPIClient.name:UserServiceAPIClient}",
+    url="${application.services.external.user-service.base-url}",
+    configuration = ClientConfiguration.class,
+    fallbackFactory = RoleResourceApiClient.RoleResourceApiClientFallback.class
+)
 public interface RoleResourceApiClient extends RoleResourceApi {
     class RoleResourceApiClientFallback implements FallbackFactory<RoleResourceApiClient> {
 

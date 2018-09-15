@@ -49,15 +49,13 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
 
-    @Autowired
-    private RoleResourceApiClient roleResourceApiClient;
+    private final RoleResourceApiClient roleResourceApiClient;
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
+    private final ApplicationProperties applicationProperties;
 
-    public VideoService(VideoRepository videoRepository) {
-        this.videoRepository = videoRepository;
-    }
+    //public VideoService(VideoRepository videoRepository) {
+//        this.videoRepository = videoRepository;
+//    }
 
     /**
      * Save a video.

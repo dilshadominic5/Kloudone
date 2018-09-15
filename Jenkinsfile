@@ -25,7 +25,7 @@ node {
     }
 
     stage('packaging') {
-        sh "./mvnw verify deploy -Pprod -DskipTests"
+        sh "./mvnw verify deploy -Pprod,swagger,zipkin -DskipTests"
         archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
     }
     stage('quality analysis') {

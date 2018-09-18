@@ -19,6 +19,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,6 @@ import java.util.UUID;
 /**
  * Service Implementation for managing Video.
  */
-@RequiredArgsConstructor
 @Service
 @Transactional
 public class VideoService {
@@ -44,11 +44,14 @@ public class VideoService {
 
     private final Logger log = LoggerFactory.getLogger(VideoService.class);
 
-    private final VideoRepository videoRepository;
+    @Autowired
+    private VideoRepository videoRepository;
 
-    private final RoleResourceApiClient roleResourceApiClient;
+    @Autowired
+    private RoleResourceApiClient roleResourceApiClient;
 
-    private final ApplicationProperties applicationProperties;
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
 
     /**

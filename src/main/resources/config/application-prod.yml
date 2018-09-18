@@ -156,4 +156,4 @@ application:
     services:
         external:
             user-service:
-                base-url: "http://gateway.xedflix.com/UserService"
+                base-url: "http://gateway.xedflix.com/userservice"

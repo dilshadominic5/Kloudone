@@ -2,7 +2,6 @@ package com.xedflix.video.service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.apigateway.model.Op;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -20,7 +19,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import java.net.URL;
 import java.util.Date;
@@ -53,9 +50,6 @@ public class VideoService {
 
     private final ApplicationProperties applicationProperties;
 
-    //public VideoService(VideoRepository videoRepository) {
-//        this.videoRepository = videoRepository;
-//    }
 
     /**
      * Save a video.

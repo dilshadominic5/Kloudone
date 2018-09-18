@@ -101,7 +101,7 @@ spring:
         mode: HTML
 
 server:
-    port: 0
+    port: 8084
     servlet:
         session:
             cookie:

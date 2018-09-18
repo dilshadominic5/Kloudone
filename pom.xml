@@ -15,11 +15,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>snapshots</id>
-            <url>http://artifactory:8081/artifactory/libs-snapshot</url>
+            <url>http://artifactory.xedflix.com:80/artifactory/libs-snapshot</url>
         </snapshotRepository>
         <repository>
             <id>releases</id>
-            <url>http://artifactory:8081/artifactory/libs-release-local</url>
+            <url>http://artifactory.xedflix.com:80/artifactory/libs-release</url>
         </repository>
     </distributionManagement>
     <!-- jhipster-needle-distribution-management -->
@@ -64,7 +64,7 @@
 
         <!-- Plugin versions -->
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>

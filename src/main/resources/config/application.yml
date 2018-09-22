@@ -13,12 +13,7 @@
 # Full reference is available at:
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
-server:
-    port: ${PORT:0}
-    servlet:
-        session:
-            cookie:
-                http-only: true
+
 eureka:
     client:
         enabled: true
@@ -105,7 +100,12 @@ spring:
     thymeleaf:
         mode: HTML
 
-
+server:
+    port: 8084
+    servlet:
+        session:
+            cookie:
+                http-only: true
 
 # Properties to be exposed on the /info management endpoint
 info:

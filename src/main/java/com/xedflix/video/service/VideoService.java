@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.constraints.NotNull;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -206,5 +207,10 @@ public class VideoService {
         presignedUrlDTO.setExpiresIn(expiration.getTime());
 
         return presignedUrlDTO;
+    }
+
+    public Page<Video> search(String queryString, Long organizationId, Pageable pageable) {
+        return videoRepository.findAllByNameIgnoreCaseContainingAndOrganizationId(queryString, organizationId, pageable);
+//        return videoRepository.fullTextSearch(queryString, organizationId, pageable);
     }
 }

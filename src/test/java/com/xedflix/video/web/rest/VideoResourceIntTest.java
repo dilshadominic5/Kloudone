@@ -296,7 +296,19 @@ public class VideoResourceIntTest {
             .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(DEFAULT_UPDATED_AT.toString())))
             .andExpect(jsonPath("$.[*].isArchived").value(hasItem(DEFAULT_IS_ARCHIVED.booleanValue())));
     }
-    
+
+    @Test
+    public void searchForExistingVideoName() throws Exception {
+        videoRepository.saveAndFlush(video);
+
+        restVideoMockMvc.perform(
+            get("/api/videos/search?query=" + DEFAULT_NAME)
+                .header("Authorization",
+                    "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
 
     @Test
     @Transactional

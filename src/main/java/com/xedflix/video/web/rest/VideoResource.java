@@ -19,6 +19,7 @@ import com.xedflix.video.web.rest.util.PaginationUtil;
 import com.xedflix.video.web.rest.vm.PresignedUrlVM;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.apache.commons.io.FilenameUtils;
+import org.checkerframework.checker.units.qual.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,5 +164,20 @@ public class VideoResource {
         PresignedUrlVM presignedUrlVM = new PresignedUrlVM(videoService.generatePresignedUrl(fileName));
 
         return ResponseEntity.ok(presignedUrlVM);
+    }
+
+    /**
+     * GET /videos/search Search videos
+     * @param queryString Query String
+     * @param pageable page
+     * @return Response Entity of videos with status ok or 500 if error
+     */
+    @GetMapping("/videos/search")
+    @Timed
+    public ResponseEntity<List<Video>> search(@RequestParam(value = "query") String queryString, Pageable pageable) {
+        Long orgId = SecurityUtils.getCurrentUserOrganizationId();
+        Page<Video> page = videoService.search(queryString, orgId, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/videos/search?=" + queryString);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 }

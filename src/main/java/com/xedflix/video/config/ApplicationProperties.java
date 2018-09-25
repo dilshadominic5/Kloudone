@@ -74,5 +74,9 @@ public class ApplicationProperties {
         public String getBaseUrl() {
             return baseUrl;
         }
+
+        public void setBaseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
+        }
     }
 }

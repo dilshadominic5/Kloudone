@@ -71,6 +71,7 @@ public class VideoService {
             throw new ActionNotSupportedException();
         }
 
+        video.setUrl(applicationProperties.getCloudfront().getBaseUrl() + "/" + video.getFileName());
         return videoRepository.save(video);
     }
 

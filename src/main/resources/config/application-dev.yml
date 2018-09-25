@@ -160,6 +160,8 @@ application:
         user-video-uploads:
             bucket: xedflix-video-uploads
             region: us-west-2
+    cloudfront:
+        base-url: "https://d35qfujie0u8fs.cloudfront.net"
     services:
         external:
             user-service:

@@ -1,6 +1,8 @@
 package com.xedflix.video.config;
 
+import com.amazonaws.auth.policy.actions.CloudFrontActions;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.Cloud;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
@@ -24,6 +26,12 @@ public class ApplicationProperties {
 
     public S3 getS3() {
         return s3;
+    }
+
+    private final Cloudfront cloudfront = new Cloudfront();
+
+    public Cloudfront getCloudfront() {
+        return cloudfront;
     }
 
     public static class S3 {
@@ -56,6 +64,15 @@ public class ApplicationProperties {
                 this.region = region;
             }
 
+        }
+    }
+
+    public static class Cloudfront {
+
+        private String baseUrl;
+
+        public String getBaseUrl() {
+            return baseUrl;
         }
     }
 }

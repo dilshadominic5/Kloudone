@@ -2,6 +2,7 @@ package com.xedflix.video.web.rest;
 
 import com.xedflix.video.XedflixVideoServiceApp;
 
+import com.xedflix.video.config.ApplicationProperties;
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.repository.VideoRepository;
 import com.xedflix.video.security.AuthoritiesConstants;
@@ -32,6 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -113,11 +115,21 @@ public class VideoResourceIntTest {
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Autowired
+    private ApplicationProperties applicationProperties;
+
     private String token;
 
     private MockMvc restVideoMockMvc;
 
     private Video video;
+
+    private static String CF_URL = "";
+
+    @PostConstruct
+    public void setCfUrl() {
+        CF_URL = applicationProperties.getCloudfront().getBaseUrl();
+    }
 
     @Before
     public void setup() {
@@ -159,7 +171,7 @@ public class VideoResourceIntTest {
             .name(DEFAULT_NAME)
             .fileName(DEFAULT_FILE_NAME)
             .description(DEFAULT_DESCRIPTION)
-            .url(DEFAULT_URL)
+            .url(CF_URL + "/" + DEFAULT_URL)
             .userId(DEFAULT_USER_ID)
             .organizationId(DEFAULT_ORGANIZATION_ID)
             .imageUrl(DEFAULT_IMAGE_URL)
@@ -197,7 +209,7 @@ public class VideoResourceIntTest {
         assertThat(testVideo.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testVideo.getFileName()).isEqualTo(DEFAULT_FILE_NAME);
         assertThat(testVideo.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-        assertThat(testVideo.getUrl()).isEqualTo(DEFAULT_URL);
+        assertThat(testVideo.getUrl()).isEqualTo(applicationProperties.getCloudfront().getBaseUrl() + "/" + DEFAULT_URL);
         assertThat(testVideo.getUserId()).isEqualTo(DEFAULT_USER_ID);
         assertThat(testVideo.getOrganizationId()).isEqualTo(DEFAULT_ORGANIZATION_ID);
         assertThat(testVideo.getImageUrl()).isEqualTo(DEFAULT_IMAGE_URL);
@@ -286,7 +298,7 @@ public class VideoResourceIntTest {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
             .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME.toString())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
-            .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL.toString())))
+            .andExpect(jsonPath("$.[*].url").value(hasItem((applicationProperties.getCloudfront().getBaseUrl() + "/" + DEFAULT_URL).toString())))
             .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
             .andExpect(jsonPath("$.[*].organizationId").value(hasItem(DEFAULT_ORGANIZATION_ID.intValue())))
             .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGE_URL.toString())))
@@ -327,7 +339,7 @@ public class VideoResourceIntTest {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
             .andExpect(jsonPath("$.fileName").value(DEFAULT_FILE_NAME.toString()))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
-            .andExpect(jsonPath("$.url").value(DEFAULT_URL.toString()))
+            .andExpect(jsonPath("$.url").value((applicationProperties.getCloudfront().getBaseUrl() + "/" + DEFAULT_URL).toString()))
             .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()))
             .andExpect(jsonPath("$.organizationId").value(DEFAULT_ORGANIZATION_ID.intValue()))
             .andExpect(jsonPath("$.imageUrl").value(DEFAULT_IMAGE_URL.toString()))

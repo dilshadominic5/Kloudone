@@ -1,11 +1,5 @@
 package com.xedflix.video.web.rest;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Builder;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.codahale.metrics.annotation.Timed;
 import com.xedflix.video.config.ApplicationProperties;
 import com.xedflix.video.domain.Video;
@@ -18,8 +12,6 @@ import com.xedflix.video.web.rest.util.HeaderUtil;
 import com.xedflix.video.web.rest.util.PaginationUtil;
 import com.xedflix.video.web.rest.vm.PresignedUrlVM;
 import io.github.jhipster.web.util.ResponseUtil;
-import org.apache.commons.io.FilenameUtils;
-import org.checkerframework.checker.units.qual.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +26,8 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.net.URL;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * REST controller for managing Video.
@@ -130,6 +119,20 @@ public class VideoResource {
     @GetMapping("/videos/{id}")
     @Timed
     public ResponseEntity<Video> getVideo(@PathVariable Long id) throws ActionNotSupportedException {
+        log.debug("REST request to get Video : {}", id);
+        Optional<Video> video = videoService.findOneByOrganization(id);
+        return ResponseUtil.wrapOrNotFound(video);
+    }
+
+    /**
+     * GET  /videos/:id : get the "id" video.
+     *
+     * @param id the id of the video to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the video, or with status 404 (Not Found)
+     */
+    @GetMapping("/videos/internal/{id}")
+    @Timed
+    public ResponseEntity<Video> getVideoInternal(@PathVariable Long id) {
         log.debug("REST request to get Video : {}", id);
         Optional<Video> video = videoService.findOne(id);
         return ResponseUtil.wrapOrNotFound(video);

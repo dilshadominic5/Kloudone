@@ -131,7 +131,7 @@ public class VideoService {
      * @return the entity
      */
     @Transactional(readOnly = true)
-    public Optional<Video> findOne(Long id) throws ActionNotSupportedException {
+    public Optional<Video> findOneByOrganization(Long id) throws ActionNotSupportedException {
         log.debug("Request to get Video : {}", id);
 
         ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
@@ -143,6 +143,19 @@ public class VideoService {
         }
 
         return videoRepository.findOneByIdAndOrganizationId(id, SecurityUtils.getCurrentUserOrganizationId());
+    }
+
+    /**
+     * Get one video by id.
+     *
+     * @param id the id of the entity
+     * @return the entity
+     */
+    @Transactional(readOnly = true)
+    public Optional<Video> findOne(Long id) {
+        log.debug("Request to get Video : {}", id);
+
+        return videoRepository.findById(id);
     }
 
     /**

@@ -5,10 +5,7 @@ import com.xedflix.video.XedflixVideoServiceApp;
 import com.xedflix.video.config.ApplicationProperties;
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.repository.VideoRepository;
-import com.xedflix.video.security.AuthoritiesConstants;
-import com.xedflix.video.security.SecurityUtils;
-import com.xedflix.video.security.UserDetailsConstants;
-import com.xedflix.video.security.UserNamePasswordAuthenticationTokenExtended;
+import com.xedflix.video.security.*;
 import com.xedflix.video.security.jwt.TokenProvider;
 import com.xedflix.video.service.VideoService;
 import com.xedflix.video.web.rest.errors.ExceptionTranslator;
@@ -143,6 +140,7 @@ public class VideoResourceIntTest {
         Map<String, Object> claims = new HashMap<>();
         claims.put(UserDetailsConstants.ORG_ID, DEFAULT_ORGANIZATION_ID);
         claims.put(UserDetailsConstants.ID, DEFAULT_USER_ID);
+        claims.put(UserDetailsConstants.ROLE, UserRole.ORG_SUPER_ADMIN.getUserRole());
 
         Authentication authentication = new UserNamePasswordAuthenticationTokenExtended(
             "mohsal",

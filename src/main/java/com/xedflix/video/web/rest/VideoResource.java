@@ -103,7 +103,7 @@ public class VideoResource {
      */
     @GetMapping("/videos")
     @Timed
-    public ResponseEntity<List<Video>> getAllVideos(Pageable pageable) throws ActionNotSupportedException {
+    public ResponseEntity<List<Video>> getAllVideos(Pageable pageable) throws Exception {
         log.debug("REST request to get a page of Videos");
         Page<Video> page = videoService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/videos");

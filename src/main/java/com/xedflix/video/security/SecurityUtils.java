@@ -90,6 +90,13 @@ public final class SecurityUtils {
         return ((Integer)details.getOrDefault(UserDetailsConstants.ORG_ID, -1)).longValue();
     }
 
+    public static String getCurrentUserRole() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Map<String, Object> details = (Map<String, Object>) authentication.getDetails();
+        return (String)details.get(UserDetailsConstants.ROLE);
+    }
+
     public static Map<String, Object> getCurrentUserDetails() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();

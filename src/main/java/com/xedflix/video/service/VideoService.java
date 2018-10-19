@@ -6,21 +6,24 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.xedflix.video.client.user_service_apiclient.api.RoleResourceApiClient;
+import com.xedflix.video.client.user_service_apiclient.api.UserResourceAccessPermissionResourceApiClient;
 import com.xedflix.video.client.user_service_apiclient.model.ActionPermissionForRole;
+import com.xedflix.video.client.user_service_apiclient.model.UserResourceAccessPermission;
 import com.xedflix.video.config.ApplicationProperties;
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.repository.VideoRepository;
 import com.xedflix.video.security.SecurityUtils;
+import com.xedflix.video.security.UserRole;
 import com.xedflix.video.service.dto.PresignedUrlDTO;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
 import com.xedflix.video.service.exceptions.ResourceNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,10 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.net.URL;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing Video.
@@ -54,6 +55,8 @@ public class VideoService {
     @Autowired
     private ApplicationProperties applicationProperties;
 
+    @Autowired
+    private UserResourceAccessPermissionResourceApiClient userResourceAccessPermissionResourceApiClient;
 
     /**
      * Save a video.
@@ -106,7 +109,7 @@ public class VideoService {
      * @return the list of entities
      */
     @Transactional(readOnly = true)
-    public Page<Video> findAll(Pageable pageable) throws ActionNotSupportedException {
+    public Page<Video> findAll(Pageable pageable) throws Exception {
         log.debug("Request to get all Videos");
 
         ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
@@ -117,10 +120,60 @@ public class VideoService {
             throw new ActionNotSupportedException();
         }
 
+        Page<Video> videoPage = Page.empty();
+
+        String role = SecurityUtils.getCurrentUserRole();
+        UserRole userRole = UserRole.valueOf(role);
+
         Long userId = SecurityUtils.getCurrentUserId();
         Long organizationId = SecurityUtils.getCurrentUserOrganizationId();
 
-        return videoRepository.findAllByUserIdAndOrganizationId(userId, organizationId, pageable);
+        switch (userRole) {
+            case ORG_USER:
+                ResponseEntity<List<UserResourceAccessPermission>> userResourceAccessPermissionResponseEntity =
+                    userResourceAccessPermissionResourceApiClient.findResourcesUsingGET(
+                        VIDEO_ACTION_ITEM_NAME,
+                        pageable.getOffset(),
+                        null,
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        pageable.isPaged(),
+                        pageable.getPageSize(),
+                        null,
+                        false,
+                        false,
+                        pageable.isUnpaged()
+                    );
+                if(userResourceAccessPermissionResponseEntity.getStatusCode().isError()) {
+                    throw new Exception("Error retrieving courses");
+                }
+                List<UserResourceAccessPermission> userResourceAccessPermissions = userResourceAccessPermissionResponseEntity.getBody();
+                if(userResourceAccessPermissions == null) {
+                    throw new Exception("Error retrieving courses: null");
+                }
+                log.debug("UserResourceAccessPermission permissions: {}", userResourceAccessPermissions);
+                Set<Long> videoIds = userResourceAccessPermissions
+                    .stream()
+                    .map(UserResourceAccessPermission::getResourceId)
+                    .collect(Collectors.toSet());
+                log.debug("Course Ids: {}", videoIds);
+                List<Video> videoList = videoRepository.findAllById(videoIds);
+                videoPage = new PageImpl<>(videoList);
+                break;
+            case XEDFLIX_SUPER_ADMIN:
+                videoPage = videoRepository.findAll(pageable);
+                break;
+            case END_USER:
+                break;
+            case ORG_ADMIN:
+                videoPage = videoRepository.findAllByUserIdAndOrganizationId(userId, organizationId, pageable);
+                break;
+            case ORG_SUPER_ADMIN:
+                videoPage = videoRepository.findAllByUserIdAndOrganizationId(userId, organizationId, pageable);
+                break;
+        }
+
+        return videoPage;
     }
 
 
@@ -225,6 +278,5 @@ public class VideoService {
 
     public Page<Video> search(String queryString, Long organizationId, Pageable pageable) {
         return videoRepository.findAllByNameIgnoreCaseContainingAndOrganizationId(queryString, organizationId, pageable);
-//        return videoRepository.fullTextSearch(queryString, organizationId, pageable);
     }
 }

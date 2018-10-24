@@ -214,7 +214,7 @@ public class VideoService {
     /**
      * Get one video by id.
      *
-     * @param id the id of the entity
+     * @param ids the id of the entity
      * @return the entity
      */
     @Transactional(readOnly = true)

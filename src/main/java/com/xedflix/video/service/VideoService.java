@@ -212,6 +212,19 @@ public class VideoService {
     }
 
     /**
+     * Get one video by id.
+     *
+     * @param ids the id of the entity
+     * @return the entity
+     */
+    @Transactional(readOnly = true)
+    public List<Video> findByIds(List<Long> ids) {
+        log.debug("Request to get Video : {}", ids);
+
+        return videoRepository.findAllById(ids);
+    }
+
+    /**
      * Delete the video by id.
      *
      * @param id the id of the entity

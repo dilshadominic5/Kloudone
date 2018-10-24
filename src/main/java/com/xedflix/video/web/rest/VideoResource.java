@@ -125,7 +125,7 @@ public class VideoResource {
     }
 
     /**
-     * GET  /videos/:id : get the "id" video.
+     * GET  /videos/internal/:id : get the "id" video.
      *
      * @param id the id of the video to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the video, or with status 404 (Not Found)
@@ -136,6 +136,20 @@ public class VideoResource {
         log.debug("REST request to get Video : {}", id);
         Optional<Video> video = videoService.findOne(id);
         return ResponseUtil.wrapOrNotFound(video);
+    }
+
+    /**
+     * GET  /videos/internal/find-by-ids : get the "id" videos.
+     *
+     * @param ids the ids of the videos to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the video, or with status 404 (Not Found)
+     */
+    @GetMapping("/videos/internal/find-by-ids")
+    @Timed
+    public ResponseEntity<List<Video>> getVideosInternal(@RequestParam List<Long> ids) {
+        log.debug("REST request to get Videos : {}", ids);
+        List<Video> videos = videoService.findByIds(ids);
+        return ResponseEntity.ok(videos);
     }
 
     /**

@@ -7,6 +7,7 @@
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20180907123400_added_entity_Video.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20180907123401_added_entity_Livestream.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20181126121422_changelog.xml" />
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

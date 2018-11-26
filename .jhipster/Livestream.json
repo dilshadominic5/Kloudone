@@ -1,5 +1,7 @@
 {
-    "name": "Livestream",
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "relationships": [],
     "fields": [
         {
             "fieldName": "name",
@@ -16,10 +18,6 @@
         {
             "fieldName": "isScheduled",
             "fieldType": "Boolean"
-        },
-        {
-            "fieldName": "scheduledAt",
-            "fieldType": "LocalDate"
         },
         {
             "fieldName": "imageUrl",
@@ -54,27 +52,41 @@
             "fieldType": "Long"
         },
         {
+            "fieldName": "isArchived",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "isPublic",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "streamUrl",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "recordedUrl",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "scheduledAt",
+            "fieldType": "ZonedDateTime"
+        },
+        {
             "fieldName": "createdAt",
-            "fieldType": "LocalDate"
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": []
         },
         {
             "fieldName": "updatedAt",
-            "fieldType": "LocalDate"
-        },
-        {
-            "fieldName": "isArchived",
-            "fieldType": "Boolean"
+            "fieldType": "ZonedDateTime"
         }
     ],
-    "relationships": [],
     "changelogDate": "20180907123401",
-    "entityTableName": "livestream",
     "dto": "no",
-    "pagination": "pagination",
+    "searchEngine": false,
     "service": "serviceClass",
+    "entityTableName": "livestream",
     "jpaMetamodelFiltering": false,
-    "fluentMethods": true,
-    "clientRootFolder": "",
-    "applications": "*",
+    "pagination": "pagination",
     "microserviceName": "XedflixVideoService"
 }

@@ -7,6 +7,7 @@ import javax.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 /**
@@ -35,9 +36,6 @@ public class Livestream implements Serializable {
     @Column(name = "is_scheduled")
     private Boolean isScheduled;
 
-    @Column(name = "scheduled_at")
-    private LocalDate scheduledAt;
-
     @Column(name = "image_url")
     private String imageUrl;
 
@@ -62,14 +60,26 @@ public class Livestream implements Serializable {
     @Column(name = "organization_id")
     private Long organizationId;
 
-    @Column(name = "created_at")
-    private LocalDate createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDate updatedAt;
-
     @Column(name = "is_archived")
     private Boolean isArchived;
+
+    @Column(name = "is_public")
+    private Boolean isPublic;
+
+    @Column(name = "stream_url")
+    private String streamUrl;
+
+    @Column(name = "recorded_url")
+    private String recordedUrl;
+
+    @Column(name = "scheduled_at")
+    private ZonedDateTime scheduledAt;
+
+    @Column(name = "created_at")
+    private ZonedDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private ZonedDateTime updatedAt;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -130,19 +140,6 @@ public class Livestream implements Serializable {
 
     public void setIsScheduled(Boolean isScheduled) {
         this.isScheduled = isScheduled;
-    }
-
-    public LocalDate getScheduledAt() {
-        return scheduledAt;
-    }
-
-    public Livestream scheduledAt(LocalDate scheduledAt) {
-        this.scheduledAt = scheduledAt;
-        return this;
-    }
-
-    public void setScheduledAt(LocalDate scheduledAt) {
-        this.scheduledAt = scheduledAt;
     }
 
     public String getImageUrl() {
@@ -249,32 +246,6 @@ public class Livestream implements Serializable {
         this.organizationId = organizationId;
     }
 
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public Livestream createdAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDate getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Livestream updatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    public void setUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public Boolean isIsArchived() {
         return isArchived;
     }
@@ -286,6 +257,84 @@ public class Livestream implements Serializable {
 
     public void setIsArchived(Boolean isArchived) {
         this.isArchived = isArchived;
+    }
+
+    public Boolean isIsPublic() {
+        return isPublic;
+    }
+
+    public Livestream isPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+        return this;
+    }
+
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public String getStreamUrl() {
+        return streamUrl;
+    }
+
+    public Livestream streamUrl(String streamUrl) {
+        this.streamUrl = streamUrl;
+        return this;
+    }
+
+    public void setStreamUrl(String streamUrl) {
+        this.streamUrl = streamUrl;
+    }
+
+    public String getRecordedUrl() {
+        return recordedUrl;
+    }
+
+    public Livestream recordedUrl(String recordedUrl) {
+        this.recordedUrl = recordedUrl;
+        return this;
+    }
+
+    public void setRecordedUrl(String recordedUrl) {
+        this.recordedUrl = recordedUrl;
+    }
+
+    public ZonedDateTime getScheduledAt() {
+        return scheduledAt;
+    }
+
+    public Livestream scheduledAt(ZonedDateTime scheduledAt) {
+        this.scheduledAt = scheduledAt;
+        return this;
+    }
+
+    public void setScheduledAt(ZonedDateTime scheduledAt) {
+        this.scheduledAt = scheduledAt;
+    }
+
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public Livestream createdAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public ZonedDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Livestream updatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
@@ -317,7 +366,6 @@ public class Livestream implements Serializable {
             ", description='" + getDescription() + "'" +
             ", streamKey='" + getStreamKey() + "'" +
             ", isScheduled='" + isIsScheduled() + "'" +
-            ", scheduledAt='" + getScheduledAt() + "'" +
             ", imageUrl='" + getImageUrl() + "'" +
             ", recordedFileName='" + getRecordedFileName() + "'" +
             ", startedAt='" + getStartedAt() + "'" +
@@ -326,9 +374,13 @@ public class Livestream implements Serializable {
             ", hasEnded='" + isHasEnded() + "'" +
             ", userId=" + getUserId() +
             ", organizationId=" + getOrganizationId() +
+            ", isArchived='" + isIsArchived() + "'" +
+            ", isPublic='" + isIsPublic() + "'" +
+            ", streamUrl='" + getStreamUrl() + "'" +
+            ", recordedUrl='" + getRecordedUrl() + "'" +
+            ", scheduledAt='" + getScheduledAt() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
             ", updatedAt='" + getUpdatedAt() + "'" +
-            ", isArchived='" + isIsArchived() + "'" +
             "}";
     }
 }

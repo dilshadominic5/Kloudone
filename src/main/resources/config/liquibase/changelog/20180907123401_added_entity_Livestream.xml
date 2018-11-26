@@ -38,10 +38,6 @@
                 <constraints nullable="true" />
             </column>
 
-            <column name="scheduled_at" type="date">
-                <constraints nullable="true" />
-            </column>
-
             <column name="image_url" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
@@ -74,20 +70,39 @@
                 <constraints nullable="true" />
             </column>
 
-            <column name="created_at" type="date">
-                <constraints nullable="true" />
-            </column>
-
-            <column name="updated_at" type="date">
-                <constraints nullable="true" />
-            </column>
-
             <column name="is_archived" type="bit">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="is_public" type="bit">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="stream_url" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="recorded_url" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="scheduled_at" type="datetime">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="created_at" type="datetime">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="updated_at" type="datetime">
                 <constraints nullable="true" />
             </column>
 
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
+        <dropDefaultValue tableName="livestream" columnName="scheduled_at" columnDataType="datetime"/>
+        <dropDefaultValue tableName="livestream" columnName="created_at" columnDataType="datetime"/>
+        <dropDefaultValue tableName="livestream" columnName="updated_at" columnDataType="datetime"/>
         
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->

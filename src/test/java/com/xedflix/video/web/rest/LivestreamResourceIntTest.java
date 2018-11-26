@@ -4,6 +4,10 @@ import com.xedflix.video.XedflixVideoServiceApp;
 
 import com.xedflix.video.domain.Livestream;
 import com.xedflix.video.repository.LivestreamRepository;
+import com.xedflix.video.security.UserDetailsConstants;
+import com.xedflix.video.security.UserNamePasswordAuthenticationTokenExtended;
+import com.xedflix.video.security.UserRole;
+import com.xedflix.video.security.jwt.TokenProvider;
 import com.xedflix.video.service.LivestreamService;
 import com.xedflix.video.web.rest.errors.ExceptionTranslator;
 
@@ -16,6 +20,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -26,7 +36,10 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import static com.xedflix.video.web.rest.TestUtil.sameInstant;
@@ -43,6 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = XedflixVideoServiceApp.class)
+@ActiveProfiles("test")
 public class LivestreamResourceIntTest {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
@@ -105,7 +119,8 @@ public class LivestreamResourceIntTest {
     @Autowired
     private LivestreamRepository livestreamRepository;
 
-    
+    @Autowired
+    private FilterChainProxy springSecurityFilterChain;
 
     @Autowired
     private LivestreamService livestreamService;
@@ -120,7 +135,12 @@ public class LivestreamResourceIntTest {
     private ExceptionTranslator exceptionTranslator;
 
     @Autowired
+    private TokenProvider tokenProvider;
+
+    @Autowired
     private EntityManager em;
+
+    private String token;
 
     private MockMvc restLivestreamMockMvc;
 
@@ -130,7 +150,25 @@ public class LivestreamResourceIntTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         final LivestreamResource livestreamResource = new LivestreamResource(livestreamService);
+
+        ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(UserDetailsConstants.ORG_ID, DEFAULT_ORGANIZATION_ID);
+        claims.put(UserDetailsConstants.ID, DEFAULT_USER_ID);
+        claims.put(UserDetailsConstants.ROLE, UserRole.ORG_SUPER_ADMIN.getUserRole());
+
+        Authentication authentication = new UserNamePasswordAuthenticationTokenExtended(
+            "mohsal",
+            "saleem",
+            grantedAuthorities
+        );
+        token = this.tokenProvider.createTokenWithClaims(authentication, true, claims);
+
         this.restLivestreamMockMvc = MockMvcBuilders.standaloneSetup(livestreamResource)
+            .apply(SecurityMockMvcConfigurers.springSecurity(springSecurityFilterChain))
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
             .setConversionService(createFormattingConversionService())
@@ -179,6 +217,7 @@ public class LivestreamResourceIntTest {
 
         // Create the Livestream
         restLivestreamMockMvc.perform(post("/api/livestreams")
+            .header("Authorization", "Bearer " + token)
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(livestream)))
             .andExpect(status().isCreated());
@@ -202,7 +241,6 @@ public class LivestreamResourceIntTest {
         assertThat(testLivestream.getStreamUrl()).isEqualTo(DEFAULT_STREAM_URL);
         assertThat(testLivestream.getRecordedUrl()).isEqualTo(DEFAULT_RECORDED_URL);
         assertThat(testLivestream.getScheduledAt()).isEqualTo(DEFAULT_SCHEDULED_AT);
-        assertThat(testLivestream.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
         assertThat(testLivestream.getUpdatedAt()).isEqualTo(DEFAULT_UPDATED_AT);
         assertThat(testLivestream.getStartedAt()).isEqualTo(DEFAULT_STARTED_AT);
         assertThat(testLivestream.getEndedAt()).isEqualTo(DEFAULT_ENDED_AT);
@@ -218,6 +256,7 @@ public class LivestreamResourceIntTest {
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restLivestreamMockMvc.perform(post("/api/livestreams")
+            .header("Authorization", "Bearer " + token)
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(livestream)))
             .andExpect(status().isBadRequest());
@@ -234,7 +273,8 @@ public class LivestreamResourceIntTest {
         livestreamRepository.saveAndFlush(livestream);
 
         // Get all the livestreamList
-        restLivestreamMockMvc.perform(get("/api/livestreams?sort=id,desc"))
+        restLivestreamMockMvc.perform(get("/api/livestreams?sort=id,desc")
+            .header("Authorization", "Bearer " + token))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(livestream.getId().intValue())))
@@ -253,8 +293,6 @@ public class LivestreamResourceIntTest {
             .andExpect(jsonPath("$.[*].streamUrl").value(hasItem(DEFAULT_STREAM_URL.toString())))
             .andExpect(jsonPath("$.[*].recordedUrl").value(hasItem(DEFAULT_RECORDED_URL.toString())))
             .andExpect(jsonPath("$.[*].scheduledAt").value(hasItem(sameInstant(DEFAULT_SCHEDULED_AT))))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))))
-            .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(sameInstant(DEFAULT_UPDATED_AT))))
             .andExpect(jsonPath("$.[*].startedAt").value(hasItem(sameInstant(DEFAULT_STARTED_AT))))
             .andExpect(jsonPath("$.[*].endedAt").value(hasItem(sameInstant(DEFAULT_ENDED_AT))));
     }
@@ -267,7 +305,8 @@ public class LivestreamResourceIntTest {
         livestreamRepository.saveAndFlush(livestream);
 
         // Get the livestream
-        restLivestreamMockMvc.perform(get("/api/livestreams/{id}", livestream.getId()))
+        restLivestreamMockMvc.perform(get("/api/livestreams/{id}", livestream.getId())
+            .header("Authorization", "Bearer " + token))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(livestream.getId().intValue()))
@@ -295,7 +334,8 @@ public class LivestreamResourceIntTest {
     @Transactional
     public void getNonExistingLivestream() throws Exception {
         // Get the livestream
-        restLivestreamMockMvc.perform(get("/api/livestreams/{id}", Long.MAX_VALUE))
+        restLivestreamMockMvc.perform(get("/api/livestreams/{id}", Long.MAX_VALUE)
+            .header("Authorization", "Bearer " + token))
             .andExpect(status().isNotFound());
     }
 
@@ -333,6 +373,7 @@ public class LivestreamResourceIntTest {
             .endedAt(UPDATED_ENDED_AT);
 
         restLivestreamMockMvc.perform(put("/api/livestreams")
+            .header("Authorization", "Bearer " + token)
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(updatedLivestream)))
             .andExpect(status().isOk());
@@ -349,15 +390,13 @@ public class LivestreamResourceIntTest {
         assertThat(testLivestream.getRecordedFileName()).isEqualTo(UPDATED_RECORDED_FILE_NAME);
         assertThat(testLivestream.isHasStarted()).isEqualTo(UPDATED_HAS_STARTED);
         assertThat(testLivestream.isHasEnded()).isEqualTo(UPDATED_HAS_ENDED);
-        assertThat(testLivestream.getUserId()).isEqualTo(UPDATED_USER_ID);
-        assertThat(testLivestream.getOrganizationId()).isEqualTo(UPDATED_ORGANIZATION_ID);
+        assertThat(testLivestream.getUserId()).isEqualTo(DEFAULT_USER_ID);
+        assertThat(testLivestream.getOrganizationId()).isEqualTo(DEFAULT_ORGANIZATION_ID);
         assertThat(testLivestream.isIsArchived()).isEqualTo(UPDATED_IS_ARCHIVED);
         assertThat(testLivestream.isIsPublic()).isEqualTo(UPDATED_IS_PUBLIC);
         assertThat(testLivestream.getStreamUrl()).isEqualTo(UPDATED_STREAM_URL);
         assertThat(testLivestream.getRecordedUrl()).isEqualTo(UPDATED_RECORDED_URL);
         assertThat(testLivestream.getScheduledAt()).isEqualTo(UPDATED_SCHEDULED_AT);
-        assertThat(testLivestream.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
-        assertThat(testLivestream.getUpdatedAt()).isEqualTo(UPDATED_UPDATED_AT);
         assertThat(testLivestream.getStartedAt()).isEqualTo(UPDATED_STARTED_AT);
         assertThat(testLivestream.getEndedAt()).isEqualTo(UPDATED_ENDED_AT);
     }
@@ -371,6 +410,7 @@ public class LivestreamResourceIntTest {
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException 
         restLivestreamMockMvc.perform(put("/api/livestreams")
+            .header("Authorization", "Bearer " + token)
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(livestream)))
             .andExpect(status().isBadRequest());
@@ -390,6 +430,7 @@ public class LivestreamResourceIntTest {
 
         // Get the livestream
         restLivestreamMockMvc.perform(delete("/api/livestreams/{id}", livestream.getId())
+            .header("Authorization", "Bearer " + token)
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 

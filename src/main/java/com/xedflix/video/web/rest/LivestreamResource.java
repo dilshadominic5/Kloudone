@@ -5,6 +5,7 @@ import com.xedflix.video.domain.Livestream;
 import com.xedflix.video.security.SecurityUtils;
 import com.xedflix.video.security.UserRole;
 import com.xedflix.video.service.LivestreamService;
+import com.xedflix.video.service.dto.LivestreamDTO;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
 import com.xedflix.video.service.exceptions.ResourceNotFoundException;
 import com.xedflix.video.service.exceptions.ResponseErrorException;
@@ -98,7 +99,7 @@ public class LivestreamResource {
      */
     @GetMapping("/livestreams")
     @Timed
-    public ResponseEntity<List<Livestream>> getAllLivestreams(Pageable pageable) throws ActionNotSupportedException, ResponseErrorException {
+    public ResponseEntity<List<LivestreamDTO>> getAllLivestreams(Pageable pageable) throws ActionNotSupportedException, ResponseErrorException {
         log.debug("REST request to get a page of Livestreams");
 
         Long orgId = SecurityUtils.getCurrentUserOrganizationId();
@@ -107,7 +108,91 @@ public class LivestreamResource {
 
         UserRole userRole = UserRole.valueOf(role);
 
-        Page<Livestream> page = livestreamService.findAll(pageable, orgId, userId, userRole);
+        Page<LivestreamDTO> page = livestreamService.findAll(pageable, orgId, userId, userRole);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/livestreams");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * Get unused live streams
+     * @param pageable paging
+     * @return List of current live streams
+     */
+    @GetMapping("/livestreams/unused")
+    @Timed
+    public ResponseEntity<List<Livestream>> getUnUsedLiveStreams(Pageable pageable) throws ActionNotSupportedException, ResponseErrorException {
+        log.debug("REST request to get a page of Livestreams");
+
+        Long orgId = SecurityUtils.getCurrentUserOrganizationId();
+        Long userId = SecurityUtils.getCurrentUserId();
+        String role = SecurityUtils.getCurrentUserRole();
+
+        UserRole userRole = UserRole.valueOf(role);
+
+        Page<Livestream> page = livestreamService.findUnUsedStreams(pageable, orgId, userId, userRole);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/livestreams");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * Get currently live streams
+     * @param pageable paging
+     * @return List of current live streams
+     */
+    @GetMapping("/livestreams/live-now")
+    @Timed
+    public ResponseEntity<List<LivestreamDTO>> getCurrentLiveStreams(Pageable pageable) throws ActionNotSupportedException, ResponseErrorException {
+        log.debug("REST request to get a page of Livestreams");
+
+        Long orgId = SecurityUtils.getCurrentUserOrganizationId();
+        Long userId = SecurityUtils.getCurrentUserId();
+        String role = SecurityUtils.getCurrentUserRole();
+
+        UserRole userRole = UserRole.valueOf(role);
+
+        Page<LivestreamDTO> page = livestreamService.findLiveStreams(pageable, orgId, userId, userRole);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/livestreams");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * Get past live streams
+     * @param pageable paging
+     * @return List of past live streams
+     */
+    @GetMapping("/livestreams/past")
+    @Timed
+    public ResponseEntity<List<LivestreamDTO>> getPastStreams(Pageable pageable) throws ActionNotSupportedException, ResponseErrorException {
+        log.debug("REST request to get a page of Livestreams");
+
+        Long orgId = SecurityUtils.getCurrentUserOrganizationId();
+        Long userId = SecurityUtils.getCurrentUserId();
+        String role = SecurityUtils.getCurrentUserRole();
+
+        UserRole userRole = UserRole.valueOf(role);
+
+        Page<LivestreamDTO> page = livestreamService.findPastStreams(pageable, orgId, userId, userRole);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/livestreams");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * Get scheduled streams
+     * @param pageable paging
+     * @return List of scheduled streams
+     */
+    @GetMapping("/livestreams/scheduled")
+    @Timed
+    public ResponseEntity<List<Livestream>> getScheduledStreams(Pageable pageable) throws ActionNotSupportedException, ResponseErrorException {
+        log.debug("REST request to get a page of Livestreams");
+
+        Long orgId = SecurityUtils.getCurrentUserOrganizationId();
+        Long userId = SecurityUtils.getCurrentUserId();
+        String role = SecurityUtils.getCurrentUserRole();
+
+        UserRole userRole = UserRole.valueOf(role);
+
+        Page<Livestream> page = livestreamService.findScheduledStreams(pageable, orgId, userId, userRole);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/livestreams");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

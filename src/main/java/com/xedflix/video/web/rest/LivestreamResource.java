@@ -2,7 +2,12 @@ package com.xedflix.video.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.xedflix.video.domain.Livestream;
+import com.xedflix.video.security.SecurityUtils;
+import com.xedflix.video.security.UserRole;
 import com.xedflix.video.service.LivestreamService;
+import com.xedflix.video.service.exceptions.ActionNotSupportedException;
+import com.xedflix.video.service.exceptions.ResourceNotFoundException;
+import com.xedflix.video.service.exceptions.ResponseErrorException;
 import com.xedflix.video.web.rest.errors.BadRequestAlertException;
 import com.xedflix.video.web.rest.util.HeaderUtil;
 import com.xedflix.video.web.rest.util.PaginationUtil;
@@ -48,12 +53,16 @@ public class LivestreamResource {
      */
     @PostMapping("/livestreams")
     @Timed
-    public ResponseEntity<Livestream> createLivestream(@RequestBody Livestream livestream) throws URISyntaxException {
-        log.debug("REST request to save Livestream : {}", livestream);
+    public ResponseEntity<Livestream> createLivestream(@RequestBody Livestream livestream) throws URISyntaxException, ActionNotSupportedException {
+        log.debug("REST request to create Livestream : {}", livestream);
         if (livestream.getId() != null) {
             throw new BadRequestAlertException("A new livestream cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Livestream result = livestreamService.save(livestream);
+
+        livestream.setOrganizationId(SecurityUtils.getCurrentUserOrganizationId());
+        livestream.setUserId(SecurityUtils.getCurrentUserId());
+
+        Livestream result = livestreamService.create(livestream);
         return ResponseEntity.created(new URI("/api/livestreams/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -70,12 +79,12 @@ public class LivestreamResource {
      */
     @PutMapping("/livestreams")
     @Timed
-    public ResponseEntity<Livestream> updateLivestream(@RequestBody Livestream livestream) throws URISyntaxException {
+    public ResponseEntity<Livestream> updateLivestream(@RequestBody Livestream livestream) throws URISyntaxException, ResourceNotFoundException, ActionNotSupportedException, InstantiationException, IllegalAccessException {
         log.debug("REST request to update Livestream : {}", livestream);
         if (livestream.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Livestream result = livestreamService.save(livestream);
+        Livestream result = livestreamService.update(livestream);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, livestream.getId().toString()))
             .body(result);
@@ -89,9 +98,16 @@ public class LivestreamResource {
      */
     @GetMapping("/livestreams")
     @Timed
-    public ResponseEntity<List<Livestream>> getAllLivestreams(Pageable pageable) {
+    public ResponseEntity<List<Livestream>> getAllLivestreams(Pageable pageable) throws ActionNotSupportedException, ResponseErrorException {
         log.debug("REST request to get a page of Livestreams");
-        Page<Livestream> page = livestreamService.findAll(pageable);
+
+        Long orgId = SecurityUtils.getCurrentUserOrganizationId();
+        Long userId = SecurityUtils.getCurrentUserId();
+        String role = SecurityUtils.getCurrentUserRole();
+
+        UserRole userRole = UserRole.valueOf(role);
+
+        Page<Livestream> page = livestreamService.findAll(pageable, orgId, userId, userRole);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/livestreams");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -104,7 +120,7 @@ public class LivestreamResource {
      */
     @GetMapping("/livestreams/{id}")
     @Timed
-    public ResponseEntity<Livestream> getLivestream(@PathVariable Long id) {
+    public ResponseEntity<Livestream> getLivestream(@PathVariable Long id) throws ActionNotSupportedException {
         log.debug("REST request to get Livestream : {}", id);
         Optional<Livestream> livestream = livestreamService.findOne(id);
         return ResponseUtil.wrapOrNotFound(livestream);
@@ -118,9 +134,10 @@ public class LivestreamResource {
      */
     @DeleteMapping("/livestreams/{id}")
     @Timed
-    public ResponseEntity<Void> deleteLivestream(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLivestream(@PathVariable Long id) throws ResourceNotFoundException, ActionNotSupportedException {
         log.debug("REST request to delete Livestream : {}", id);
-        livestreamService.delete(id);
+        Long orgId = SecurityUtils.getCurrentUserOrganizationId();
+        livestreamService.delete(id, orgId);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

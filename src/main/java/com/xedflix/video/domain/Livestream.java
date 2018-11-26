@@ -6,8 +6,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.lang.reflect.Field;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -42,12 +44,6 @@ public class Livestream implements Serializable {
     @Column(name = "recorded_file_name")
     private String recordedFileName;
 
-    @Column(name = "started_at")
-    private LocalDate startedAt;
-
-    @Column(name = "ended_at")
-    private LocalDate endedAt;
-
     @Column(name = "has_started")
     private Boolean hasStarted;
 
@@ -80,6 +76,12 @@ public class Livestream implements Serializable {
 
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+
+    @Column(name = "started_at")
+    private ZonedDateTime startedAt;
+
+    @Column(name = "ended_at")
+    private ZonedDateTime endedAt;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -166,32 +168,6 @@ public class Livestream implements Serializable {
 
     public void setRecordedFileName(String recordedFileName) {
         this.recordedFileName = recordedFileName;
-    }
-
-    public LocalDate getStartedAt() {
-        return startedAt;
-    }
-
-    public Livestream startedAt(LocalDate startedAt) {
-        this.startedAt = startedAt;
-        return this;
-    }
-
-    public void setStartedAt(LocalDate startedAt) {
-        this.startedAt = startedAt;
-    }
-
-    public LocalDate getEndedAt() {
-        return endedAt;
-    }
-
-    public Livestream endedAt(LocalDate endedAt) {
-        this.endedAt = endedAt;
-        return this;
-    }
-
-    public void setEndedAt(LocalDate endedAt) {
-        this.endedAt = endedAt;
     }
 
     public Boolean isHasStarted() {
@@ -336,7 +312,60 @@ public class Livestream implements Serializable {
     public void setUpdatedAt(ZonedDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public ZonedDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public Livestream startedAt(ZonedDateTime startedAt) {
+        this.startedAt = startedAt;
+        return this;
+    }
+
+    public void setStartedAt(ZonedDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public ZonedDateTime getEndedAt() {
+        return endedAt;
+    }
+
+    public Livestream endedAt(ZonedDateTime endedAt) {
+        this.endedAt = endedAt;
+        return this;
+    }
+
+    public void setEndedAt(ZonedDateTime endedAt) {
+        this.endedAt = endedAt;
+    }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+
+    public static Livestream merge(Livestream object, Livestream into) throws IllegalAccessException, InstantiationException {
+
+        List<String> ignoreList = new ArrayList<>();
+        ignoreList.add("serialVersionUID");
+        ignoreList.add("userId");
+        ignoreList.add("organizationId");
+        ignoreList.add("createdAt");
+
+        List<String> notAccessList = new ArrayList<>();
+        notAccessList.add("serialVersionUID");
+
+        Class<Livestream> livestreamClass = Livestream.class;
+        Field[] fields = livestreamClass.getDeclaredFields();
+        Livestream live = livestreamClass.newInstance();
+        for (Field field: fields) {
+            if(!notAccessList.contains(field.getName())) {
+                field.setAccessible(true);
+                Object value1 = field.get(object);
+                Object value2 = field.get(into);
+                Object value = (value1 != null && !ignoreList.contains(field.getName())) ? value1 : value2;
+                field.set(live, value);
+            }
+        }
+
+        return live;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -368,8 +397,6 @@ public class Livestream implements Serializable {
             ", isScheduled='" + isIsScheduled() + "'" +
             ", imageUrl='" + getImageUrl() + "'" +
             ", recordedFileName='" + getRecordedFileName() + "'" +
-            ", startedAt='" + getStartedAt() + "'" +
-            ", endedAt='" + getEndedAt() + "'" +
             ", hasStarted='" + isHasStarted() + "'" +
             ", hasEnded='" + isHasEnded() + "'" +
             ", userId=" + getUserId() +
@@ -381,6 +408,8 @@ public class Livestream implements Serializable {
             ", scheduledAt='" + getScheduledAt() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
             ", updatedAt='" + getUpdatedAt() + "'" +
+            ", startedAt='" + getStartedAt() + "'" +
+            ", endedAt='" + getEndedAt() + "'" +
             "}";
     }
 }

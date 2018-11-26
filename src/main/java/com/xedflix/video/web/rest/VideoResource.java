@@ -59,7 +59,7 @@ public class VideoResource {
     @PostMapping("/videos")
     @Timed
     public ResponseEntity<Video> createVideo(@Valid @RequestBody Video video) throws URISyntaxException, ActionNotSupportedException {
-        log.debug("REST request to save Video : {}", video);
+        log.debug("REST request to create Video : {}", video);
         if (video.getId() != null) {
             throw new BadRequestAlertException("A new video cannot already have an ID", ENTITY_NAME, "idexists");
         }

@@ -28,14 +28,6 @@
             "fieldType": "String"
         },
         {
-            "fieldName": "startedAt",
-            "fieldType": "LocalDate"
-        },
-        {
-            "fieldName": "endedAt",
-            "fieldType": "LocalDate"
-        },
-        {
             "fieldName": "hasStarted",
             "fieldType": "Boolean"
         },
@@ -78,6 +70,14 @@
         },
         {
             "fieldName": "updatedAt",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "startedAt",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "endedAt",
             "fieldType": "ZonedDateTime"
         }
     ],

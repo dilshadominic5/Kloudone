@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
@@ -64,12 +63,6 @@ public class LivestreamResourceIntTest {
     private static final String DEFAULT_RECORDED_FILE_NAME = "AAAAAAAAAA";
     private static final String UPDATED_RECORDED_FILE_NAME = "BBBBBBBBBB";
 
-    private static final LocalDate DEFAULT_STARTED_AT = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_STARTED_AT = LocalDate.now(ZoneId.systemDefault());
-
-    private static final LocalDate DEFAULT_ENDED_AT = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_ENDED_AT = LocalDate.now(ZoneId.systemDefault());
-
     private static final Boolean DEFAULT_HAS_STARTED = false;
     private static final Boolean UPDATED_HAS_STARTED = true;
 
@@ -102,6 +95,12 @@ public class LivestreamResourceIntTest {
 
     private static final ZonedDateTime DEFAULT_UPDATED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
     private static final ZonedDateTime UPDATED_UPDATED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+
+    private static final ZonedDateTime DEFAULT_STARTED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
+    private static final ZonedDateTime UPDATED_STARTED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+
+    private static final ZonedDateTime DEFAULT_ENDED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
+    private static final ZonedDateTime UPDATED_ENDED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
 
     @Autowired
     private LivestreamRepository livestreamRepository;
@@ -152,8 +151,6 @@ public class LivestreamResourceIntTest {
             .isScheduled(DEFAULT_IS_SCHEDULED)
             .imageUrl(DEFAULT_IMAGE_URL)
             .recordedFileName(DEFAULT_RECORDED_FILE_NAME)
-            .startedAt(DEFAULT_STARTED_AT)
-            .endedAt(DEFAULT_ENDED_AT)
             .hasStarted(DEFAULT_HAS_STARTED)
             .hasEnded(DEFAULT_HAS_ENDED)
             .userId(DEFAULT_USER_ID)
@@ -164,7 +161,9 @@ public class LivestreamResourceIntTest {
             .recordedUrl(DEFAULT_RECORDED_URL)
             .scheduledAt(DEFAULT_SCHEDULED_AT)
             .createdAt(DEFAULT_CREATED_AT)
-            .updatedAt(DEFAULT_UPDATED_AT);
+            .updatedAt(DEFAULT_UPDATED_AT)
+            .startedAt(DEFAULT_STARTED_AT)
+            .endedAt(DEFAULT_ENDED_AT);
         return livestream;
     }
 
@@ -194,8 +193,6 @@ public class LivestreamResourceIntTest {
         assertThat(testLivestream.isIsScheduled()).isEqualTo(DEFAULT_IS_SCHEDULED);
         assertThat(testLivestream.getImageUrl()).isEqualTo(DEFAULT_IMAGE_URL);
         assertThat(testLivestream.getRecordedFileName()).isEqualTo(DEFAULT_RECORDED_FILE_NAME);
-        assertThat(testLivestream.getStartedAt()).isEqualTo(DEFAULT_STARTED_AT);
-        assertThat(testLivestream.getEndedAt()).isEqualTo(DEFAULT_ENDED_AT);
         assertThat(testLivestream.isHasStarted()).isEqualTo(DEFAULT_HAS_STARTED);
         assertThat(testLivestream.isHasEnded()).isEqualTo(DEFAULT_HAS_ENDED);
         assertThat(testLivestream.getUserId()).isEqualTo(DEFAULT_USER_ID);
@@ -207,6 +204,8 @@ public class LivestreamResourceIntTest {
         assertThat(testLivestream.getScheduledAt()).isEqualTo(DEFAULT_SCHEDULED_AT);
         assertThat(testLivestream.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
         assertThat(testLivestream.getUpdatedAt()).isEqualTo(DEFAULT_UPDATED_AT);
+        assertThat(testLivestream.getStartedAt()).isEqualTo(DEFAULT_STARTED_AT);
+        assertThat(testLivestream.getEndedAt()).isEqualTo(DEFAULT_ENDED_AT);
     }
 
     @Test
@@ -245,8 +244,6 @@ public class LivestreamResourceIntTest {
             .andExpect(jsonPath("$.[*].isScheduled").value(hasItem(DEFAULT_IS_SCHEDULED.booleanValue())))
             .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGE_URL.toString())))
             .andExpect(jsonPath("$.[*].recordedFileName").value(hasItem(DEFAULT_RECORDED_FILE_NAME.toString())))
-            .andExpect(jsonPath("$.[*].startedAt").value(hasItem(DEFAULT_STARTED_AT.toString())))
-            .andExpect(jsonPath("$.[*].endedAt").value(hasItem(DEFAULT_ENDED_AT.toString())))
             .andExpect(jsonPath("$.[*].hasStarted").value(hasItem(DEFAULT_HAS_STARTED.booleanValue())))
             .andExpect(jsonPath("$.[*].hasEnded").value(hasItem(DEFAULT_HAS_ENDED.booleanValue())))
             .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
@@ -257,7 +254,9 @@ public class LivestreamResourceIntTest {
             .andExpect(jsonPath("$.[*].recordedUrl").value(hasItem(DEFAULT_RECORDED_URL.toString())))
             .andExpect(jsonPath("$.[*].scheduledAt").value(hasItem(sameInstant(DEFAULT_SCHEDULED_AT))))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))))
-            .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(sameInstant(DEFAULT_UPDATED_AT))));
+            .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(sameInstant(DEFAULT_UPDATED_AT))))
+            .andExpect(jsonPath("$.[*].startedAt").value(hasItem(sameInstant(DEFAULT_STARTED_AT))))
+            .andExpect(jsonPath("$.[*].endedAt").value(hasItem(sameInstant(DEFAULT_ENDED_AT))));
     }
     
 
@@ -278,8 +277,6 @@ public class LivestreamResourceIntTest {
             .andExpect(jsonPath("$.isScheduled").value(DEFAULT_IS_SCHEDULED.booleanValue()))
             .andExpect(jsonPath("$.imageUrl").value(DEFAULT_IMAGE_URL.toString()))
             .andExpect(jsonPath("$.recordedFileName").value(DEFAULT_RECORDED_FILE_NAME.toString()))
-            .andExpect(jsonPath("$.startedAt").value(DEFAULT_STARTED_AT.toString()))
-            .andExpect(jsonPath("$.endedAt").value(DEFAULT_ENDED_AT.toString()))
             .andExpect(jsonPath("$.hasStarted").value(DEFAULT_HAS_STARTED.booleanValue()))
             .andExpect(jsonPath("$.hasEnded").value(DEFAULT_HAS_ENDED.booleanValue()))
             .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()))
@@ -290,7 +287,9 @@ public class LivestreamResourceIntTest {
             .andExpect(jsonPath("$.recordedUrl").value(DEFAULT_RECORDED_URL.toString()))
             .andExpect(jsonPath("$.scheduledAt").value(sameInstant(DEFAULT_SCHEDULED_AT)))
             .andExpect(jsonPath("$.createdAt").value(sameInstant(DEFAULT_CREATED_AT)))
-            .andExpect(jsonPath("$.updatedAt").value(sameInstant(DEFAULT_UPDATED_AT)));
+            .andExpect(jsonPath("$.updatedAt").value(sameInstant(DEFAULT_UPDATED_AT)))
+            .andExpect(jsonPath("$.startedAt").value(sameInstant(DEFAULT_STARTED_AT)))
+            .andExpect(jsonPath("$.endedAt").value(sameInstant(DEFAULT_ENDED_AT)));
     }
     @Test
     @Transactional
@@ -304,7 +303,7 @@ public class LivestreamResourceIntTest {
     @Transactional
     public void updateLivestream() throws Exception {
         // Initialize the database
-        livestreamService.save(livestream);
+        livestreamService.create(livestream);
 
         int databaseSizeBeforeUpdate = livestreamRepository.findAll().size();
 
@@ -319,8 +318,6 @@ public class LivestreamResourceIntTest {
             .isScheduled(UPDATED_IS_SCHEDULED)
             .imageUrl(UPDATED_IMAGE_URL)
             .recordedFileName(UPDATED_RECORDED_FILE_NAME)
-            .startedAt(UPDATED_STARTED_AT)
-            .endedAt(UPDATED_ENDED_AT)
             .hasStarted(UPDATED_HAS_STARTED)
             .hasEnded(UPDATED_HAS_ENDED)
             .userId(UPDATED_USER_ID)
@@ -331,7 +328,9 @@ public class LivestreamResourceIntTest {
             .recordedUrl(UPDATED_RECORDED_URL)
             .scheduledAt(UPDATED_SCHEDULED_AT)
             .createdAt(UPDATED_CREATED_AT)
-            .updatedAt(UPDATED_UPDATED_AT);
+            .updatedAt(UPDATED_UPDATED_AT)
+            .startedAt(UPDATED_STARTED_AT)
+            .endedAt(UPDATED_ENDED_AT);
 
         restLivestreamMockMvc.perform(put("/api/livestreams")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -348,8 +347,6 @@ public class LivestreamResourceIntTest {
         assertThat(testLivestream.isIsScheduled()).isEqualTo(UPDATED_IS_SCHEDULED);
         assertThat(testLivestream.getImageUrl()).isEqualTo(UPDATED_IMAGE_URL);
         assertThat(testLivestream.getRecordedFileName()).isEqualTo(UPDATED_RECORDED_FILE_NAME);
-        assertThat(testLivestream.getStartedAt()).isEqualTo(UPDATED_STARTED_AT);
-        assertThat(testLivestream.getEndedAt()).isEqualTo(UPDATED_ENDED_AT);
         assertThat(testLivestream.isHasStarted()).isEqualTo(UPDATED_HAS_STARTED);
         assertThat(testLivestream.isHasEnded()).isEqualTo(UPDATED_HAS_ENDED);
         assertThat(testLivestream.getUserId()).isEqualTo(UPDATED_USER_ID);
@@ -361,6 +358,8 @@ public class LivestreamResourceIntTest {
         assertThat(testLivestream.getScheduledAt()).isEqualTo(UPDATED_SCHEDULED_AT);
         assertThat(testLivestream.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
         assertThat(testLivestream.getUpdatedAt()).isEqualTo(UPDATED_UPDATED_AT);
+        assertThat(testLivestream.getStartedAt()).isEqualTo(UPDATED_STARTED_AT);
+        assertThat(testLivestream.getEndedAt()).isEqualTo(UPDATED_ENDED_AT);
     }
 
     @Test
@@ -385,7 +384,7 @@ public class LivestreamResourceIntTest {
     @Transactional
     public void deleteLivestream() throws Exception {
         // Initialize the database
-        livestreamService.save(livestream);
+        livestreamService.create(livestream);
 
         int databaseSizeBeforeDelete = livestreamRepository.findAll().size();
 

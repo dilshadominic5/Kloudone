@@ -61,11 +61,11 @@ public class VideoService {
     /**
      * Save a video.
      *
-     * @param video the entity to save
+     * @param video the entity to create
      * @return the persisted entity
      */
     public Video save(Video video) throws ActionNotSupportedException {
-        log.debug("Request to save Video : {}", video);
+        log.debug("Request to create Video : {}", video);
         ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
             roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
 
@@ -85,7 +85,7 @@ public class VideoService {
      * @return the persisted entity
      */
     public Video update(Video video) throws ActionNotSupportedException, InstantiationException, IllegalAccessException, ResourceNotFoundException {
-        log.debug("Request to save Video : {}", video);
+        log.debug("Request to create Video : {}", video);
         ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
             roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
 

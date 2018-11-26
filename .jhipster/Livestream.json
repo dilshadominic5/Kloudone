@@ -1,5 +1,7 @@
 {
-    "name": "Livestream",
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "relationships": [],
     "fields": [
         {
             "fieldName": "name",
@@ -18,24 +20,12 @@
             "fieldType": "Boolean"
         },
         {
-            "fieldName": "scheduledAt",
-            "fieldType": "LocalDate"
-        },
-        {
             "fieldName": "imageUrl",
             "fieldType": "String"
         },
         {
             "fieldName": "recordedFileName",
             "fieldType": "String"
-        },
-        {
-            "fieldName": "startedAt",
-            "fieldType": "LocalDate"
-        },
-        {
-            "fieldName": "endedAt",
-            "fieldType": "LocalDate"
         },
         {
             "fieldName": "hasStarted",
@@ -54,27 +44,49 @@
             "fieldType": "Long"
         },
         {
+            "fieldName": "isArchived",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "isPublic",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "streamUrl",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "recordedUrl",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "scheduledAt",
+            "fieldType": "ZonedDateTime"
+        },
+        {
             "fieldName": "createdAt",
-            "fieldType": "LocalDate"
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": []
         },
         {
             "fieldName": "updatedAt",
-            "fieldType": "LocalDate"
+            "fieldType": "ZonedDateTime"
         },
         {
-            "fieldName": "isArchived",
-            "fieldType": "Boolean"
+            "fieldName": "startedAt",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "endedAt",
+            "fieldType": "ZonedDateTime"
         }
     ],
-    "relationships": [],
     "changelogDate": "20180907123401",
-    "entityTableName": "livestream",
     "dto": "no",
-    "pagination": "pagination",
+    "searchEngine": false,
     "service": "serviceClass",
+    "entityTableName": "livestream",
     "jpaMetamodelFiltering": false,
-    "fluentMethods": true,
-    "clientRootFolder": "",
-    "applications": "*",
+    "pagination": "pagination",
     "microserviceName": "XedflixVideoService"
 }

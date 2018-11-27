@@ -549,8 +549,12 @@ public class LivestreamService {
     }
 
     public void onRTMPPublish(String call, String app, String name) throws ActionNotSupportedException, ResourceNotFoundException, IllegalAccessException, InstantiationException {
-        if(!call.equals("publish") || !app.equals(applicationName)) {
-            throw new ActionNotSupportedException();
+        if(!call.equals("publish")) {
+            throw new ActionNotSupportedException("Invalid call type: " + call);
+        }
+
+        if(!app.equals(applicationName)) {
+            throw new ActionNotSupportedException("Invalid application name: " + app);
         }
 
         Livestream livestream = livestreamRepository.findByStreamKey(name).orElseThrow(ResourceNotFoundException::new);

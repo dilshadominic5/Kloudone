@@ -156,7 +156,7 @@ jhipster:
 
 application:
     livestream:
-        application_name: kl_live
+        application_name: kl_live,kl_live
         ingestion:
             rtmp:
                 base_url: rtmp://rtmp.kloudlearn.com/live

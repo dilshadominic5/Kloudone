@@ -548,6 +548,18 @@ public class LivestreamService {
         livestreamRepository.deleteById(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    private Livestream updateInternal(Livestream livestream) throws ResourceNotFoundException, InstantiationException, IllegalAccessException {
+        log.debug("Request to update Livestream: {}", livestream);
+
+        livestream.setUpdatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
+
+        Livestream existingLivestream = livestreamRepository.findById(livestream.getId()).orElseThrow(ResourceNotFoundException::new);
+        Livestream mergedLivestream = Livestream.merge(livestream, existingLivestream);
+
+        return livestreamRepository.save(mergedLivestream);
+    }
+
     public void onRTMPPublish(String call, String app, String name) throws ActionNotSupportedException, ResourceNotFoundException, IllegalAccessException, InstantiationException {
         if(!call.equals("publish")) {
             throw new ActionNotSupportedException("Invalid call type: " + call);
@@ -560,7 +572,7 @@ public class LivestreamService {
         Livestream livestream = livestreamRepository.findByStreamKey(name).orElseThrow(ResourceNotFoundException::new);
         livestream.setHasStarted(true);
         livestream.setStartedAt(ZonedDateTime.now(ZoneId.of("UTC")));
-        update(livestream);
+        updateInternal(livestream);
     }
 
     public void onRTMPEnd(String call, String name) throws ActionNotSupportedException, ResourceNotFoundException, IllegalAccessException, InstantiationException {
@@ -571,7 +583,7 @@ public class LivestreamService {
         Livestream livestream = livestreamRepository.findByStreamKey(name).orElseThrow(ResourceNotFoundException::new);
         livestream.setHasEnded(true);
         livestream.setEndedAt(ZonedDateTime.now(ZoneId.of("UTC")));
-        update(livestream);
+        updateInternal(livestream);
     }
 
     public void onRTMPRecordDone(String call, String name, String path) throws ActionNotSupportedException, ResourceNotFoundException, IllegalAccessException, InstantiationException {
@@ -586,6 +598,6 @@ public class LivestreamService {
         recordedFileName = StringUtils.replaceLast(recordedFileName, "flv", "mp4");
 
         livestream.setRecordedFileName(recordedFileName);
-        update(livestream);
+        updateInternal(livestream);
     }
 }

@@ -154,4 +154,16 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+application:
+    livestream:
+        application_name: kl_live
+        ingestion:
+            rtmp:
+                base_url: rtmp://rtmp.kloudlearn.com/live
+        delivery:
+            live:
+                hls_base_url: https://live.kloudlearn.com/hls
+                dash_base_url: https://live.kloudlearn.com/dash
+                rtmp_stream_base_url: rtmp://rtmp.kloudlearn.com/kl_live
+            recorded:
+                base_url: https://live.kloudlearn.com/kl_recorded_streams

@@ -1,6 +1,5 @@
 package com.xedflix.video.service;
 
-import com.amazonaws.services.ec2.model.ResponseError;
 import com.google.common.hash.Hashing;
 import com.xedflix.video.client.user_service_apiclient.api.RoleResourceApiClient;
 import com.xedflix.video.client.user_service_apiclient.api.UserResourceAccessPermissionResourceApiClient;
@@ -13,10 +12,12 @@ import com.xedflix.video.service.dto.LivestreamDTO;
 import com.xedflix.video.service.exceptions.ActionNotSupportedException;
 import com.xedflix.video.service.exceptions.ResourceNotFoundException;
 import com.xedflix.video.service.exceptions.ResponseErrorException;
+import com.xedflix.video.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,9 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import javax.xml.ws.Response;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -72,21 +71,32 @@ public class LivestreamService {
         this.livestreamRepository = livestreamRepository;
     }
 
-    public static final String rtmp_base_url = "rtmp://rtmp.kloudlearn.com/live";
+    @Value("${application.livestream.application_name}")
+    private String applicationName;
 
-    public static final String live_hls_stream_url = "https://live.kloudlearn.com/hls";
-    public static final String live_dash_stream_url = "https://live.kloudlearn.com/dash";
-    public static final String live_recorded_video_url = "https://live.kloudlearn.com/live_stream_recordings";
-    public static final String live_rtmp_stream_url = "rtmp://rtmp.kloudlearn.com/direct";
+    @Value("${application.livestream.ingestion.rtmp.base_url}")
+    private String rtmpBaseUrl;
 
-    public static String makeRecordedUrl(String name) { return live_recorded_video_url + "/" + name; }
-    public static String makeHLSStreamUrl(String key) {
-        return live_hls_stream_url + "/" + key + ".m3u8";
+    @Value("${application.livestream.delivery.live.hls_base_url}")
+    private String liveHlsStreamUrl;
+
+    @Value("${application.livestream.delivery.live.dash_base_url}")
+    private String liveDashStreamUrl;
+
+    @Value("${application.livestream.delivery.recorded.base_url}")
+    private String liveRecordedVideoUrl;
+
+    @Value("${application.livestream.delivery.live.rtmp_stream_base_url}")
+    private String liveRtmpStreamUrl;
+
+    public String makeRecordedUrl(String name) { return liveRecordedVideoUrl + "/" + name; }
+    public String makeHLSStreamUrl(String key) {
+        return liveHlsStreamUrl + "/" + key + ".m3u8";
     }
-    public static String makeDASHStreamUrl(String key) {
-        return live_dash_stream_url + "/" + key + "/index.mpd";
+    public String makeDASHStreamUrl(String key) {
+        return liveDashStreamUrl + "/" + key + "/index.mpd";
     }
-    public static String makeRTMPStreamUrl(String key) { return live_rtmp_stream_url + "/" + key; }
+    public String makeRTMPStreamUrl(String key) { return liveRtmpStreamUrl + "/" + key; }
 
     public static String generateStreamKey(String resource, String resourceId, String userId) {
 
@@ -249,6 +259,7 @@ public class LivestreamService {
 
         List<LivestreamDTO> livestreamDTOS = livestreamPage.stream().map(livestream -> {
             LivestreamDTO livestreamDTO = new LivestreamDTO(livestream);
+            livestreamDTO.setStreamUrl(rtmpBaseUrl);
             livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
@@ -305,6 +316,7 @@ public class LivestreamService {
 
         List<LivestreamDTO> livestreamDTOS = livestreamPage.stream().map(livestream -> {
             LivestreamDTO livestreamDTO = new LivestreamDTO(livestream);
+            livestreamDTO.setStreamUrl(rtmpBaseUrl);
             livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
@@ -345,16 +357,20 @@ public class LivestreamService {
                 livestreamPage = livestreamRepository.findByHasStartedAndHasEnded(HAS_STARTED, HAS_NOT_ENDED, pageable);
                 break;
             case ORG_SUPER_ADMIN:
-                livestreamPage = livestreamRepository.findByOrganizationIdAndHasStartedAndHasEnded(organizationId, HAS_NOT_STARTED, HAS_NOT_ENDED, pageable);
+                livestreamPage = livestreamRepository.findByOrganizationIdAndIsScheduledAndHasStartedAndHasEnded(organizationId, IS_NOT_SCHEDULED, HAS_NOT_STARTED, HAS_NOT_ENDED, pageable);
                 break;
             case ORG_ADMIN:
-                livestreamPage = livestreamRepository.findByOrganizationIdAndHasStartedAndHasEnded(organizationId, HAS_NOT_STARTED, HAS_NOT_ENDED, pageable);
+                livestreamPage = livestreamRepository.findByOrganizationIdAndIsScheduledAndHasStartedAndHasEnded(organizationId, IS_NOT_SCHEDULED, HAS_NOT_STARTED, HAS_NOT_ENDED, pageable);
                 break;
             case ORG_USER:
-                livestreamPage = livestreamRepository.findByOrganizationIdAndHasStartedAndHasEnded(organizationId, HAS_NOT_STARTED, HAS_NOT_ENDED, pageable);
+                livestreamPage = livestreamRepository.findByOrganizationIdAndIsScheduledAndHasStartedAndHasEnded(organizationId, IS_NOT_SCHEDULED, HAS_NOT_STARTED, HAS_NOT_ENDED, pageable);
                 break;
             case END_USER:
                 break;
+        }
+
+        for (Livestream livestream : livestreamPage) {
+            livestream.setStreamUrl(rtmpBaseUrl);
         }
 
         return livestreamPage;
@@ -405,9 +421,11 @@ public class LivestreamService {
 
         List<LivestreamDTO> livestreamDTOS = livestreamPage.stream().map(livestream -> {
             LivestreamDTO livestreamDTO = new LivestreamDTO(livestream);
+            livestreamDTO.setStreamUrl(rtmpBaseUrl);
             livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setRecordedUrl(makeRecordedUrl(livestream.getRecordedFileName()));
             return livestreamDTO;
         }).collect(Collectors.toList());
 
@@ -462,6 +480,11 @@ public class LivestreamService {
             case END_USER:
                 break;
         }
+
+        for (Livestream livestream : livestreamPage) {
+            livestream.setStreamUrl(rtmpBaseUrl);
+        }
+
         return livestreamPage;
     }
 
@@ -523,5 +546,42 @@ public class LivestreamService {
         }
 
         livestreamRepository.deleteById(id);
+    }
+
+    public void onRTMPPublish(String call, String app, String name) throws ActionNotSupportedException, ResourceNotFoundException, IllegalAccessException, InstantiationException {
+        if(!call.equals("publish") || !app.equals(applicationName)) {
+            throw new ActionNotSupportedException();
+        }
+
+        Livestream livestream = livestreamRepository.findByStreamKey(name).orElseThrow(ResourceNotFoundException::new);
+        livestream.setHasStarted(true);
+        livestream.setStartedAt(ZonedDateTime.now(ZoneId.of("UTC")));
+        update(livestream);
+    }
+
+    public void onRTMPEnd(String call, String name) throws ActionNotSupportedException, ResourceNotFoundException, IllegalAccessException, InstantiationException {
+        if(!call.equals("done")) {
+            throw new ActionNotSupportedException();
+        }
+
+        Livestream livestream = livestreamRepository.findByStreamKey(name).orElseThrow(ResourceNotFoundException::new);
+        livestream.setHasEnded(true);
+        livestream.setEndedAt(ZonedDateTime.now(ZoneId.of("UTC")));
+        update(livestream);
+    }
+
+    public void onRTMPRecordDone(String call, String name, String path) throws ActionNotSupportedException, ResourceNotFoundException, IllegalAccessException, InstantiationException {
+        if(!call.equals("record_done")) {
+            throw new ActionNotSupportedException();
+        }
+
+        Livestream livestream = livestreamRepository.findByStreamKey(name).orElseThrow(ResourceNotFoundException::new);
+
+        String[] pathSplit = path.split("/");
+        String recordedFileName = pathSplit[pathSplit.length - 1];
+        recordedFileName = StringUtils.replaceLast(recordedFileName, "flv", "mp4");
+
+        livestream.setRecordedFileName(recordedFileName);
+        update(livestream);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -26,4 +27,5 @@ public interface LivestreamRepository extends JpaRepository<Livestream, Long> {
 
     Page<Livestream> findByOrganizationIdAndIsScheduledAndHasStartedAndHasEnded(Long organizationId, boolean isScheduled, boolean hasStarted, boolean hasEnded, Pageable pageable);
 
+    Optional<Livestream> findByStreamKey(String streamKey);
 }

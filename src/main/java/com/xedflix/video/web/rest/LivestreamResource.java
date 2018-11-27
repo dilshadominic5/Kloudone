@@ -225,4 +225,44 @@ public class LivestreamResource {
         livestreamService.delete(id, orgId);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
+
+
+    @PostMapping("/livestreams/callbacks/rtmp/on_publish")
+    @Timed
+    public ResponseEntity<Void> onRTMPPublish(
+        @RequestParam("call") String call,
+        @RequestParam("app") String app,
+        @RequestParam("name") String name)
+        throws
+        ResourceNotFoundException, ActionNotSupportedException, InstantiationException, IllegalAccessException {
+        log.debug("REST request to notify publishing of stream: {}", (call + ":" + app + ":" + name));
+        livestreamService.onRTMPPublish(call, app, name);
+        return ResponseEntity.ok().body(null);
+    }
+
+    @PostMapping("/livestreams/callbacks/rtmp/on_end")
+    @Timed
+    public ResponseEntity<Void> onRTMPEnd(
+        @RequestParam("call") String call,
+        @RequestParam("name") String name)
+        throws
+        ResourceNotFoundException, ActionNotSupportedException, InstantiationException, IllegalAccessException {
+        log.debug("REST request to notify publishing of stream: {}", (call + ":" + name));
+        livestreamService.onRTMPEnd(call, name);
+        return ResponseEntity.ok().body(null);
+    }
+
+    @PostMapping("/livestreams/callbacks/rtmp/on_record_done")
+    @Timed
+    public ResponseEntity<Void> onRTMPRecordDone(
+        @RequestParam("call") String call,
+        @RequestParam("name") String name,
+        @RequestParam("path") String path)
+        throws
+        ResourceNotFoundException, ActionNotSupportedException, InstantiationException, IllegalAccessException {
+        log.debug("REST request to notify publishing of stream: {}", (call + ":" + name + ":" + path));
+        livestreamService.onRTMPRecordDone(call, name, path);
+        return ResponseEntity.ok().body(null);
+    }
+
 }

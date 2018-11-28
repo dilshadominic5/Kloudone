@@ -55,7 +55,7 @@ public class LivestreamService {
     private static final boolean HAS_NOT_STARTED = false;
 
     private static final boolean IS_SCHEDULED = true;
-    private static final boolean IS_NOT_SCHEDULED = true;
+    private static final boolean IS_NOT_SCHEDULED = false;
 
     private final Logger log = LoggerFactory.getLogger(LivestreamService.class);
 
@@ -266,9 +266,7 @@ public class LivestreamService {
             return livestreamDTO;
         }).collect(Collectors.toList());
 
-        Page<LivestreamDTO> livestreamDTOPage = new PageImpl<>(livestreamDTOS, pageable, livestreamPage.getTotalPages());
-
-        return livestreamDTOPage;
+        return new PageImpl<>(livestreamDTOS, pageable, livestreamPage.getTotalPages());
     }
 
     /**
@@ -354,7 +352,7 @@ public class LivestreamService {
         Page<Livestream> livestreamPage = Page.empty(pageable);
         switch (userRole) {
             case XEDFLIX_SUPER_ADMIN:
-                livestreamPage = livestreamRepository.findByHasStartedAndHasEnded(HAS_STARTED, HAS_NOT_ENDED, pageable);
+                livestreamPage = livestreamRepository.findByIsScheduledAndHasStartedAndHasEnded(IS_NOT_SCHEDULED, HAS_NOT_STARTED, HAS_NOT_ENDED, pageable);
                 break;
             case ORG_SUPER_ADMIN:
                 livestreamPage = livestreamRepository.findByOrganizationIdAndIsScheduledAndHasStartedAndHasEnded(organizationId, IS_NOT_SCHEDULED, HAS_NOT_STARTED, HAS_NOT_ENDED, pageable);
@@ -372,6 +370,8 @@ public class LivestreamService {
         for (Livestream livestream : livestreamPage) {
             livestream.setStreamUrl(rtmpBaseUrl);
         }
+
+        log.debug("Livestreams: {}", livestreamPage);
 
         return livestreamPage;
     }

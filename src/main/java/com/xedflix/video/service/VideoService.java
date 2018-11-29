@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,6 +77,8 @@ public class VideoService {
         }
 
         video.setUrl(applicationProperties.getCloudfront().getBaseUrl() + "/" + video.getFileName());
+        LocalDate localDate = LocalDate.now(ZoneId.of("UTC"));
+        video.setCreatedAt(localDate);
         return videoRepository.save(video);
     }
 
@@ -98,7 +102,7 @@ public class VideoService {
         Video newVideo = Video.merge(video, videoToUpdate);
 
         log.debug("New video: {}", newVideo);
-
+        newVideo.setUpdatedAt(LocalDate.now(ZoneId.of("UTC")));
         return videoRepository.save(newVideo);
     }
 

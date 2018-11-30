@@ -205,9 +205,9 @@ public class LivestreamResource {
      */
     @GetMapping("/livestreams/{id}")
     @Timed
-    public ResponseEntity<Livestream> getLivestream(@PathVariable Long id) throws ActionNotSupportedException {
+    public ResponseEntity<LivestreamDTO> getLivestream(@PathVariable Long id) throws ActionNotSupportedException {
         log.debug("REST request to get Livestream : {}", id);
-        Optional<Livestream> livestream = livestreamService.findOne(id);
+        Optional<LivestreamDTO> livestream = livestreamService.findOne(id);
         return ResponseUtil.wrapOrNotFound(livestream);
     }
 

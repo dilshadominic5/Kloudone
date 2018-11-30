@@ -150,7 +150,9 @@ public class LivestreamService {
             generateStreamKey(ENTITY_NAME, "RANDOM", String.valueOf(livestream.getUserId()))
         );
 
-        return livestreamRepository.save(livestream);
+        Livestream savedLiveStream = livestreamRepository.save(livestream);
+        savedLiveStream.setStreamUrl(rtmpBaseUrl);
+        return savedLiveStream;
     }
 
     /**
@@ -497,7 +499,7 @@ public class LivestreamService {
      * @return the entity
      */
     @Transactional(readOnly = true)
-    public Optional<Livestream> findOne(Long id) throws ActionNotSupportedException {
+    public Optional<LivestreamDTO> findOne(Long id) throws ActionNotSupportedException {
         log.debug("Request to get Livestream : {}", id);
 
         ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
@@ -515,7 +517,20 @@ public class LivestreamService {
             throw new ActionNotSupportedException(ACTION_NOT_SUPPORTED_MESSAGE);
         }
 
-        return livestreamRepository.findById(id);
+        LivestreamDTO livestreamDTO = null;
+        Optional<Livestream> livestreamOptional = livestreamRepository.findById(id);
+        if(livestreamOptional.isPresent()) {
+            Livestream livestream = livestreamOptional.get();
+            livestreamDTO = new LivestreamDTO(livestream);
+            livestreamDTO.setStreamUrl(rtmpBaseUrl);
+            livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
+        }
+
+        Optional<LivestreamDTO> livestreamDTOOptional = Optional.of(livestreamDTO);
+
+        return livestreamDTOOptional;
     }
 
     /**

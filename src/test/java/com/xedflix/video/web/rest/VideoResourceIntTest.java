@@ -213,7 +213,6 @@ public class VideoResourceIntTest {
         assertThat(testVideo.getImageUrl()).isEqualTo(DEFAULT_IMAGE_URL);
         assertThat(testVideo.getSize()).isEqualTo(DEFAULT_SIZE);
         assertThat(testVideo.getDuration()).isEqualTo(DEFAULT_DURATION);
-        assertThat(testVideo.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
         assertThat(testVideo.getUpdatedAt()).isEqualTo(DEFAULT_UPDATED_AT);
         assertThat(testVideo.isIsArchived()).isEqualTo(DEFAULT_IS_ARCHIVED);
     }

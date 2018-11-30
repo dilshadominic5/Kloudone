@@ -266,6 +266,8 @@ public class LivestreamService {
             return livestreamDTO;
         }).collect(Collectors.toList());
 
+        log.debug("Livestreams: {}", livestreamDTOS);
+
         return new PageImpl<>(livestreamDTOS, pageable, livestreamPage.getTotalPages());
     }
 

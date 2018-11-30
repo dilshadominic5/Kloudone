@@ -159,7 +159,7 @@ application:
         application_name: kl_live,kl_live
         ingestion:
             rtmp:
-                base_url: rtmp://rtmp.kloudlearn.com/live
+                base_url: rtmp://rtmp.kloudlearn.com/kl_live
         delivery:
             live:
                 hls_base_url: https://live.kloudlearn.com/hls

@@ -528,9 +528,11 @@ public class LivestreamService {
             livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
         }
 
-        Optional<LivestreamDTO> livestreamDTOOptional = Optional.of(livestreamDTO);
+        if(livestreamDTO != null) {
+            return Optional.of(livestreamDTO);
+        }
 
-        return livestreamDTOOptional;
+        return Optional.empty();
     }
 
     /**

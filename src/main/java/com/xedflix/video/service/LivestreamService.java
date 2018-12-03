@@ -629,7 +629,7 @@ public class LivestreamService {
         Livestream livestream = livestreamOptional.get();
 
         // If the stream is public, show error
-        if(livestream.isIsPublic()) {
+        if(!livestream.isIsPublic()) {
             throw new ActionNotSupportedException("Livestream cannot be viewed. This stream is private");
         }
 

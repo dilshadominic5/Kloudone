@@ -619,4 +619,29 @@ public class LivestreamService {
         livestream.setRecordedFileName(recordedFileName);
         updateInternal(livestream);
     }
+
+    public Optional<LivestreamDTO> getLivestreamForEmbed(String streamKey) throws ActionNotSupportedException {
+        Optional<Livestream> livestreamOptional = livestreamRepository.findByStreamKey(streamKey);
+        if(!livestreamOptional.isPresent()) {
+            return Optional.empty();
+        }
+
+        Livestream livestream = livestreamOptional.get();
+
+        // If the stream is public, show error
+        if(livestream.isIsPublic()) {
+            throw new ActionNotSupportedException("Livestream cannot be viewed. This stream is private");
+        }
+
+        LivestreamDTO livestreamDTO = new LivestreamDTO(livestream);
+        // If live stream has started, send stream url data
+        if(livestream.isHasStarted()) {
+            livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setRecordedUrl(makeRecordedUrl(livestream.getRecordedFileName()));
+        }
+
+        return Optional.of(livestreamDTO);
+    }
 }

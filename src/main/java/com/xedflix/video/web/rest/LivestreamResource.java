@@ -265,4 +265,11 @@ public class LivestreamResource {
         return ResponseEntity.ok().body(null);
     }
 
+    @GetMapping("/livestreams/embed")
+    @Timed
+    public ResponseEntity<LivestreamDTO> getLivestreamForEmbed(@RequestParam("streamKey") String streamKey) throws ActionNotSupportedException {
+        log.debug("Request to get livestream data: {}", streamKey);
+        return ResponseUtil.wrapOrNotFound(livestreamService.getLivestreamForEmbed(streamKey));
+    }
+
 }

@@ -65,17 +65,36 @@ function isJson(item) {
 }
 
 function setupPlayer(data) {
-    debug(data)
+
+    var response = JSON.parse(data)
+    var src = {
+        src: "",
+        type: ""
+    }
+
+    if(!response.hasStarted) {
+        handleError(JSON.stringify({ detail: "Stream has not started yet" }), 500)
+        return;
+    }
+
     var livestreamElementId = "livestream-player";
     var player = videojs(livestreamElementId);
 
-    player.src({
-        src: "https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8",
-        type: "application/x-mpegURL"
-    })
+    if(response.hasStarted && response.hasEnded) {
+        src.src = response.recordedUrl;
+        src.type = "video/mp4";
+    }
+
+    if(response.hasStarted && !response.hasEnded) {
+        src.src = response.hlsUrl;
+        src.type = "application/x-mpegURL";
+    }
+
+    player.src(src)
 }
 
 function handleError(message, status) {
+    debug(message)
     var errorMessage = "Error playing video";
     if(isJson(message)) {
         var errorJson = JSON.parse(message)
@@ -90,7 +109,7 @@ function handleError(message, status) {
 }
 
 var streamKey = getUrlParameter('streamKey');
-var livestreamServiceUrl = "http://localhost:8084/api/livestreams/embed";
+var livestreamServiceUrl = "https://gateway.kloudlearn.com/xedflixvideoservice/api/livestreams/embed";
 function initialize() {
     debug("Livestream Key: " + streamKey)
     if(streamKey !== null && streamKey !== undefined)

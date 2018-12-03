@@ -299,7 +299,6 @@ html, body {
 
 .error-overlay .error-message-box {
     color: white;
-    max-width: 300px;
-    display: block;
-    margin: 30px auto 0px auto;
+    margin-top: 30px;
+    text-align: center;
 }

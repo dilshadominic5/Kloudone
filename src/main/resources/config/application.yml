@@ -167,3 +167,4 @@ application:
                 rtmp_stream_base_url: rtmp://rtmp.kloudlearn.com/kl_live
             recorded:
                 base_url: https://live.kloudlearn.com/kl_recorded_streams
+            embed: https://app.kloudlearn.com/livestream/embed/index.html

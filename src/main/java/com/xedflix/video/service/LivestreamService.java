@@ -89,6 +89,9 @@ public class LivestreamService {
     @Value("${application.livestream.delivery.live.rtmp_stream_base_url}")
     private String liveRtmpStreamUrl;
 
+    @Value("${application.livestream.delivery.embed}")
+    private String embedCode;
+
     public String makeRecordedUrl(String name) { return liveRecordedVideoUrl + "/" + name; }
     public String makeHLSStreamUrl(String key) {
         return liveHlsStreamUrl + "/" + key + ".m3u8";
@@ -97,6 +100,15 @@ public class LivestreamService {
         return liveDashStreamUrl + "/" + key + "/index.mpd";
     }
     public String makeRTMPStreamUrl(String key) { return liveRtmpStreamUrl + "/" + key; }
+    public String makeEmbedCode(String key) {
+        return "<iframe " +
+                    "scrolling=\"no\" " +
+                    "frameborder=\"0\" " +
+                    "src=\"" + embedCode + "?streamKey=" + key + "\" " +
+                    "width=500 " +
+                    "height=281>" +
+                "</iframe>";
+    }
 
     public static String generateStreamKey(String resource, String resourceId, String userId) {
 
@@ -112,7 +124,7 @@ public class LivestreamService {
      * @return the persisted entity
      */
     @Transactional(rollbackFor = Exception.class)
-    public Livestream create(Livestream livestream) throws ActionNotSupportedException {
+    public LivestreamDTO create(Livestream livestream) throws ActionNotSupportedException {
         log.debug("Request to create Livestream : {}", livestream);
 
         livestream.setCreatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
@@ -152,7 +164,11 @@ public class LivestreamService {
 
         Livestream savedLiveStream = livestreamRepository.save(livestream);
         savedLiveStream.setStreamUrl(rtmpBaseUrl);
-        return savedLiveStream;
+
+        LivestreamDTO livestreamDTO = new LivestreamDTO(livestream);
+        livestreamDTO.setEmbedCode(makeEmbedCode(savedLiveStream.getStreamKey()));
+
+        return livestreamDTO;
     }
 
     /**
@@ -265,6 +281,7 @@ public class LivestreamService {
             livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setEmbedCode(makeEmbedCode(livestream.getStreamKey()));
             return livestreamDTO;
         }).collect(Collectors.toList());
 
@@ -322,6 +339,7 @@ public class LivestreamService {
             livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setEmbedCode(makeEmbedCode(livestream.getStreamKey()));
             return livestreamDTO;
         }).collect(Collectors.toList());
 
@@ -430,6 +448,7 @@ public class LivestreamService {
             livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setRecordedUrl(makeRecordedUrl(livestream.getRecordedFileName()));
+            livestreamDTO.setEmbedCode(makeEmbedCode(livestream.getStreamKey()));
             return livestreamDTO;
         }).collect(Collectors.toList());
 
@@ -487,6 +506,7 @@ public class LivestreamService {
 
         for (Livestream livestream : livestreamPage) {
             livestream.setStreamUrl(rtmpBaseUrl);
+            livestream.setEmbedCode(makeEmbedCode(livestream.getStreamKey()));
         }
 
         return livestreamPage;
@@ -526,6 +546,7 @@ public class LivestreamService {
             livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
             livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setEmbedCode(makeEmbedCode(livestream.getStreamKey()));
         }
 
         if(livestreamDTO != null) {
@@ -618,5 +639,31 @@ public class LivestreamService {
 
         livestream.setRecordedFileName(recordedFileName);
         updateInternal(livestream);
+    }
+
+    public Optional<LivestreamDTO> getLivestreamForEmbed(String streamKey) throws ActionNotSupportedException {
+        Optional<Livestream> livestreamOptional = livestreamRepository.findByStreamKey(streamKey);
+        if(!livestreamOptional.isPresent()) {
+            return Optional.empty();
+        }
+
+        Livestream livestream = livestreamOptional.get();
+
+        // If the stream is public, show error
+        if(!livestream.isIsPublic()) {
+            throw new ActionNotSupportedException("Livestream cannot be viewed. This stream is private");
+        }
+
+        LivestreamDTO livestreamDTO = new LivestreamDTO(livestream);
+        // If live stream has started, send stream url data
+        if(livestream.isHasStarted()) {
+            livestreamDTO.setDashUrl(makeDASHStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setHlsUrl(makeHLSStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setRtmpUrl(makeRTMPStreamUrl(livestream.getStreamKey()));
+            livestreamDTO.setRecordedUrl(makeRecordedUrl(livestream.getRecordedFileName()));
+            livestreamDTO.setEmbedCode(makeEmbedCode(livestream.getStreamKey()));
+        }
+
+        return Optional.of(livestreamDTO);
     }
 }

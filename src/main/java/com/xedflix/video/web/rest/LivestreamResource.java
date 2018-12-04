@@ -54,7 +54,7 @@ public class LivestreamResource {
      */
     @PostMapping("/livestreams")
     @Timed
-    public ResponseEntity<Livestream> createLivestream(@RequestBody Livestream livestream) throws URISyntaxException, ActionNotSupportedException {
+    public ResponseEntity<LivestreamDTO> createLivestream(@RequestBody Livestream livestream) throws URISyntaxException, ActionNotSupportedException {
         log.debug("REST request to create Livestream : {}", livestream);
         if (livestream.getId() != null) {
             throw new BadRequestAlertException("A new livestream cannot already have an ID", ENTITY_NAME, "idexists");
@@ -63,7 +63,7 @@ public class LivestreamResource {
         livestream.setOrganizationId(SecurityUtils.getCurrentUserOrganizationId());
         livestream.setUserId(SecurityUtils.getCurrentUserId());
 
-        Livestream result = livestreamService.create(livestream);
+        LivestreamDTO result = livestreamService.create(livestream);
         return ResponseEntity.created(new URI("/api/livestreams/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -263,6 +263,13 @@ public class LivestreamResource {
         log.debug("REST request to notify publishing of stream: {}", (call + ":" + name + ":" + path));
         livestreamService.onRTMPRecordDone(call, name, path);
         return ResponseEntity.ok().body(null);
+    }
+
+    @GetMapping("/livestreams/embed")
+    @Timed
+    public ResponseEntity<LivestreamDTO> getLivestreamForEmbed(@RequestParam("streamKey") String streamKey) throws ActionNotSupportedException {
+        log.debug("Request to get livestream data: {}", streamKey);
+        return ResponseUtil.wrapOrNotFound(livestreamService.getLivestreamForEmbed(streamKey));
     }
 
 }

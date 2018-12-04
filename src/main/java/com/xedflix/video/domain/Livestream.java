@@ -83,6 +83,9 @@ public class Livestream implements Serializable {
     @Column(name = "ended_at")
     private ZonedDateTime endedAt;
 
+    @Transient
+    private String embedCode;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -338,6 +341,15 @@ public class Livestream implements Serializable {
     public void setEndedAt(ZonedDateTime endedAt) {
         this.endedAt = endedAt;
     }
+
+    public String getEmbedCode() {
+        return embedCode;
+    }
+
+    public void setEmbedCode(String embedCode) {
+        this.embedCode = embedCode;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     public static Livestream merge(Livestream object, Livestream into) throws IllegalAccessException, InstantiationException {

@@ -51,6 +51,8 @@ public class LivestreamDTO {
 
     private String rtmpUrl;
 
+    private String embedCode;
+
     public LivestreamDTO(Livestream livestream) {
         this.id = livestream.getId();
         this.name = livestream.getName();
@@ -72,6 +74,7 @@ public class LivestreamDTO {
         this.isPublic = livestream.isIsPublic();
         this.streamUrl = livestream.getStreamUrl();
         this.recordedUrl = livestream.getRecordedUrl();
+        this.embedCode = livestream.getEmbedCode();
     }
 
     public Long getId() {
@@ -256,5 +259,13 @@ public class LivestreamDTO {
 
     public void setRtmpUrl(String rtmpUrl) {
         this.rtmpUrl = rtmpUrl;
+    }
+
+    public String getEmbedCode() {
+        return embedCode;
+    }
+
+    public void setEmbedCode(String embedCode) {
+        this.embedCode = embedCode;
     }
 }

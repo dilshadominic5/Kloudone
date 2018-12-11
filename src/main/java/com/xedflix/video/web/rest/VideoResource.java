@@ -74,6 +74,35 @@ public class VideoResource {
     }
 
     /**
+     * POST  /videos : Create new videos.
+     *
+     * @param videos the videos to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new videos, or with status 400 (Bad Request) if the video has already an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PostMapping("/videos/multiple")
+    @Timed
+    public ResponseEntity<List<Video>> createVideo(@Valid @RequestBody List<Video> videos) throws URISyntaxException, ActionNotSupportedException {
+        log.debug("REST request to create Video : {}", videos);
+        for (Video video : videos) {
+            if (video.getId() != null) {
+                throw new BadRequestAlertException("A new video cannot already have an ID", ENTITY_NAME, "idexists");
+            }
+            if(video.getUrl() == null) {
+                throw new BadRequestAlertException("A new video part of multiple videos, need to have an url already", ENTITY_NAME, "urldoesnotexist");
+            }
+        }
+
+        videos.forEach(video -> {
+            video.setUserId(SecurityUtils.getCurrentUserId());
+            video.setOrganizationId(SecurityUtils.getCurrentUserOrganizationId());
+        });
+
+        List<Video> result = videoService.save(videos);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
      * PUT  /videos : Updates an existing video.
      *
      * @param video the video to update

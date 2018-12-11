@@ -83,6 +83,30 @@ public class VideoService {
     }
 
     /**
+     * Save a video.
+     *
+     * @param videos the entity to create
+     * @return the persisted entity
+     */
+    public List<Video> save(List<Video> videos) throws ActionNotSupportedException {
+        log.debug("Request to create Video : {}", videos);
+        ResponseEntity<ActionPermissionForRole> actionPermissionForRoleResponseEntity =
+            roleResourceApiClient.getPermissionForRoleOnActionItemUsingGET(VIDEO_ACTION_ITEM_NAME);
+
+        ActionPermissionForRole actionPermissionForRole = actionPermissionForRoleResponseEntity.getBody();
+        if(actionPermissionForRole != null && !actionPermissionForRole.isCanCreate()) {
+            throw new ActionNotSupportedException();
+        }
+
+        videos.forEach(video -> {
+            LocalDate localDate = LocalDate.now(ZoneId.of("UTC"));
+            video.setCreatedAt(localDate);
+        });
+
+        return videoRepository.saveAll(videos);
+    }
+
+    /**
      * Update a video.
      *
      * @param video the entity to update

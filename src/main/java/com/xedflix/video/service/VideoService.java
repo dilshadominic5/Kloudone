@@ -173,18 +173,18 @@ public class VideoService {
                         pageable.isUnpaged()
                     );
                 if(userResourceAccessPermissionResponseEntity.getStatusCode().isError()) {
-                    throw new Exception("Error retrieving courses");
+                    throw new Exception("Error retrieving Videos");
                 }
                 List<UserResourceAccessPermission> userResourceAccessPermissions = userResourceAccessPermissionResponseEntity.getBody();
                 if(userResourceAccessPermissions == null) {
-                    throw new Exception("Error retrieving courses: null");
+                    throw new Exception("Error retrieving Videos: null");
                 }
                 log.debug("UserResourceAccessPermission permissions: {}", userResourceAccessPermissions);
                 Set<Long> videoIds = userResourceAccessPermissions
                     .stream()
                     .map(UserResourceAccessPermission::getResourceId)
                     .collect(Collectors.toSet());
-                log.debug("Course Ids: {}", videoIds);
+                log.debug("Video Ids: {}", videoIds);
                 List<Video> videoList = videoRepository.findAllById(videoIds);
                 videoPage = new PageImpl<>(videoList);
                 break;

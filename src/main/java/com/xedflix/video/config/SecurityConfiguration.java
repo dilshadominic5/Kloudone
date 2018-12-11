@@ -58,6 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers("/api/livestreams/callbacks/**").permitAll()
             .antMatchers("/api/livestreams/embed").permitAll()
+            .antMatchers("/api/videos/internal/**").permitAll()
             .antMatchers("/api/**").authenticated()
             .antMatchers("/management/health").permitAll()
             .antMatchers("/management/info").permitAll()

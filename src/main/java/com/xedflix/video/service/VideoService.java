@@ -60,6 +60,9 @@ public class VideoService {
     @Autowired
     private UserResourceAccessPermissionResourceApiClient userResourceAccessPermissionResourceApiClient;
 
+    @Autowired
+    private VideoProcessorService videoProcessorService;
+
     /**
      * Save a video.
      *
@@ -79,7 +82,11 @@ public class VideoService {
         video.setUrl(applicationProperties.getCloudfront().getBaseUrl() + "/" + video.getFileName());
         LocalDate localDate = LocalDate.now(ZoneId.of("UTC"));
         video.setCreatedAt(localDate);
-        return videoRepository.save(video);
+        Video savedVideo = videoRepository.save(video);
+
+        videoProcessorService.updateVideoMetaData(savedVideo.getId(), savedVideo.getUrl());
+
+        return savedVideo;
     }
 
     /**

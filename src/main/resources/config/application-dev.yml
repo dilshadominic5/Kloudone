@@ -166,3 +166,6 @@ application:
         external:
             user-service:
                 base-url: "http://localhost:8083"
+    video-processing:
+        ffprobe:
+            path: "/usr/bin/ffprobe"

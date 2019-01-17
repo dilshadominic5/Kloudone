@@ -159,3 +159,6 @@ application:
         external:
             user-service:
                 base-url: "http://gateway.xedflix.com/userservice"
+    video-processing:
+        ffprobe:
+            path: "/usr/bin/ffprobe"

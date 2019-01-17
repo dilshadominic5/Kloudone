@@ -34,7 +34,7 @@ public class FFProbe {
     }
 
     public long getVideoLength() throws IOException, InterruptedException, JSONException, OutputEmptyException {
-        String output = probe();
+        String output = execute();
         if(output.isEmpty()) {
             throw new OutputEmptyException();
         }
@@ -45,7 +45,7 @@ public class FFProbe {
         return value.longValue();
     }
 
-    private String probe() throws IOException, InterruptedException {
+    private String execute() throws IOException, InterruptedException {
         this.commandList.add(this.ffProbePath);
         this.commandList.addAll(defaultProbeCommandList);
         this.commandList.add(this.inputPath);
@@ -58,6 +58,5 @@ public class FFProbe {
         process.waitFor();
         return ioThreadHandler.getOutput();
     }
-
 }
 

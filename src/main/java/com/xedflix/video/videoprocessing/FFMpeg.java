@@ -16,6 +16,7 @@ import java.util.List;
 public class FFMpeg {
     public static final String FFMpegLocation = "/usr/bin/ffmpeg";
     public static final String tempFilePath = "/tmp/videoservice/";
+    public static final String yesFlag = "-y";
 
     private static List<String> defaultCommandList = new ArrayList<>(
         Arrays.asList("-vframes", "1", "-q:v", "2")
@@ -52,6 +53,7 @@ public class FFMpeg {
 
     private void execute() throws IOException, InterruptedException {
         this.commandList.add(this.ffmpegPath);
+        this.commandList.add(yesFlag);
         this.commandList.addAll(this.offsetList);
         this.commandList.addAll(this.inputPathList);
         this.commandList.addAll(defaultCommandList);

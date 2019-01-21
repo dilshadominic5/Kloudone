@@ -18,7 +18,6 @@ logging:
         ROOT: INFO
         com.xedflix.video: INFO
         io.github.jhipster: INFO
-        com.xedflix.video.service.VideoProcessorService: DEBUG
 
 eureka:
     instance:

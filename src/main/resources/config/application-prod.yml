@@ -158,13 +158,13 @@ application:
     services:
         external:
             user-service:
-                base-url: "http://gateway.xedflix.com/userservice"
+                base-url: "https://gateway.kloudlearn.com/userservice"
     video-processing:
         temp-dir: "/tmp/videoservice/"
         ffprobe:
-            path: "/usr/bin/ffprobe"
+            path: "/home/fansto/softwares/ffmpeg/ffprobe"
         ffmpeg:
-            path: "/usr/bin/ffmpeg"
+            path: "/home/fansto/softwares/ffmpeg/ffmpeg"
     kafka:
         video-processing:
             topic: video-processing
@@ -173,3 +173,10 @@ application:
             bootstrap:
                 servers: localhost:9092
             acks: all
+    vendor:
+        s3:
+            kloudlearn-file-uploads:
+                bucket: kloudlearn-file-uploads
+                region: us-west-2
+                distribution:
+                    root: "https://d32430z1jrg4t1.cloudfront.net"

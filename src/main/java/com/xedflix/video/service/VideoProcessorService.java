@@ -1,9 +1,12 @@
 package com.xedflix.video.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.exceptions.OutputEmptyException;
 import com.xedflix.video.repository.VideoRepository;
 import com.xedflix.video.service.exceptions.ResourceNotFoundException;
+import com.xedflix.video.vendor.s3.impl.ImageUpload;
 import com.xedflix.video.videoprocessing.FFMpeg;
 import com.xedflix.video.videoprocessing.FFProbe;
 import org.json.JSONObject;
@@ -32,6 +35,9 @@ public class VideoProcessorService {
     @Value("${application.video-processing.ffmpeg.path}")
     private String ffMpegPath;
 
+    @Value("${application.vendor.s3.kloudlearn-file-uploads.distribution.root}")
+    private String cloudFrontUrl;
+
     @Autowired
     private VideoRepository videoRepository;
 
@@ -44,9 +50,7 @@ public class VideoProcessorService {
 
         try {
 
-            JSONObject jsonObject = new JSONObject(message);
-
-            Long id = Long.valueOf(jsonObject.getString("videoId"));
+            Long id = Long.valueOf(message);
 
             Optional<Video> videoOptional = videoRepository.findById(id);
             if(videoOptional.isPresent()) {
@@ -62,7 +66,7 @@ public class VideoProcessorService {
                 video.setDuration(durationInLong.floatValue());
 
                 // Update the video duration
-                videoRepository.save(video);
+                video = videoRepository.save(video);
 
                 logger.debug("Successfully updated video duration: {} {}", message, durationInLong);
 
@@ -83,7 +87,20 @@ public class VideoProcessorService {
 
                 logger.debug("Uploading to S3: {}", message);
                 // Upload to S3
-                uploadTImageToS3();
+
+                String path = FFMpeg.tempFilePath + thumbnailName;
+
+                uploadTImageToS3(thumbnailName, path);
+
+                logger.debug("Upload to S3 successful: {}", message);
+
+                String cfUrl = cloudFrontUrl + "/" + thumbnailName;
+
+                video.setImageUrl(cfUrl);
+                video = videoRepository.save(video);
+
+                logger.debug("Video processing complete for: {} - Thumbnail: {}, Duration: {}",
+                    message, video.getImageUrl(), video.getDuration());
 
             } else {
                 throw new ResourceNotFoundException();
@@ -91,6 +108,8 @@ public class VideoProcessorService {
 
         } catch (ResourceNotFoundException | IOException | OutputEmptyException e) {
             logger.error("Error processing message: {}", message, e);
+        } catch (SdkClientException e) {
+            logger.error("Error uploading image to S3: {}", message, e);
         } catch (Exception e) {
             logger.error("Unknown Exception: {}", message, e);
         }
@@ -99,8 +118,9 @@ public class VideoProcessorService {
     /**
      * Upload the generated image to S3
      */
-    private void uploadTImageToS3() {
-
+    private void uploadTImageToS3(String fileName, String filePath) {
+        ImageUpload imageUpload = new ImageUpload();
+        imageUpload.upload(fileName, filePath);
     }
 
 

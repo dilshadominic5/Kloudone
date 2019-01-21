@@ -180,3 +180,8 @@ application:
             bootstrap:
                 servers: localhost:9093
             acks: all
+    vendor:
+        s3:
+            kloudlearn-file-uploads:
+                distribution:
+                    root: "https://d32430z1jrg4t1.cloudfront.net"

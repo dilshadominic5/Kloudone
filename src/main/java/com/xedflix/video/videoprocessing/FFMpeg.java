@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class FFMpeg {
     public static final String FFMpegLocation = "/usr/bin/ffmpeg";
-    private static final String tempFilePath = "/tmp/videoservice/";
+    public static final String tempFilePath = "/tmp/videoservice/";
 
     private static List<String> defaultCommandList = new ArrayList<>(
         Arrays.asList("-vframes", "1", "-q:v", "2")

@@ -173,3 +173,10 @@ application:
             bootstrap:
                 servers: localhost:9092
             acks: all
+    vendor:
+        s3:
+            kloudlearn-file-uploads:
+                bucket: kloudlearn-file-uploads
+                region: us-west-2
+                distribution:
+                    root: "https://d32430z1jrg4t1.cloudfront.net"

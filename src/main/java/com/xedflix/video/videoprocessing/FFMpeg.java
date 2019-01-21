@@ -57,8 +57,6 @@ public class FFMpeg {
         this.commandList.addAll(defaultCommandList);
         this.commandList.add(this.fileName);
 
-        System.out.println(this.commandList);
-
         ProcessBuilder processBuilder = new ProcessBuilder(this.commandList);
         Process process = processBuilder.start();
         process.waitFor();

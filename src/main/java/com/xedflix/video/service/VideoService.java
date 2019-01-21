@@ -22,10 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +62,12 @@ public class VideoService {
     @Autowired
     private UserResourceAccessPermissionResourceApiClient userResourceAccessPermissionResourceApiClient;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Value("${application.kafka.video-processing.topic}")
+    private String videoProcessorTopic;
+
     /**
      * Save a video.
      *
@@ -79,7 +87,12 @@ public class VideoService {
         video.setUrl(applicationProperties.getCloudfront().getBaseUrl() + "/" + video.getFileName());
         LocalDate localDate = LocalDate.now(ZoneId.of("UTC"));
         video.setCreatedAt(localDate);
-        return videoRepository.save(video);
+        Video savedVideo = videoRepository.save(video);
+
+        // Send a message of the created video's ID so that the metadata such as length and thumbnail are created
+        kafkaTemplate.send(videoProcessorTopic, String.valueOf(savedVideo.getId()));
+
+        return savedVideo;
     }
 
     /**

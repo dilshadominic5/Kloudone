@@ -166,3 +166,22 @@ application:
         external:
             user-service:
                 base-url: "http://localhost:8083"
+    video-processing:
+        temp-dir: "/tmp/videoservice/"
+        ffprobe:
+            path: "/usr/bin/ffprobe"
+        ffmpeg:
+            path: "/usr/bin/ffmpeg"
+    kafka:
+        video-processing:
+            topic: video-processing-dev
+            group-id: video-processing-dev-group
+        common:
+            bootstrap:
+                servers: localhost:9093
+            acks: all
+    vendor:
+        s3:
+            kloudlearn-file-uploads:
+                distribution:
+                    root: "https://d32430z1jrg4t1.cloudfront.net"

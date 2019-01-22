@@ -24,6 +24,9 @@ public class KafkaConsumerConfig {
     @Value("${application.kafka.common.bootstrap.servers}")
     private String bootstrapServers;
 
+    @Value("${application.kafka.video-processing.max-poll-records}")
+    private String maxPollRecords;
+
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -36,6 +39,8 @@ public class KafkaConsumerConfig {
         props.put(
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
             StringDeserializer.class);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
+            maxPollRecords);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 

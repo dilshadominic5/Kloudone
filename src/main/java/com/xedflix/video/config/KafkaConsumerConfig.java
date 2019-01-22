@@ -24,7 +24,7 @@ public class KafkaConsumerConfig {
     @Value("${application.kafka.common.bootstrap.servers}")
     private String bootstrapServers;
 
-    @Value("${application.kafka.video-processing.max-poll-records}")
+    @Value("${application.kafka.video-processing.properties.max-poll-records}")
     private String maxPollRecords;
 
     @Bean

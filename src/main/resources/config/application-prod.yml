@@ -171,6 +171,7 @@ application:
             group-id: video-processing-group
             properties:
                 max-poll-records: 20
+                session.timeout.ms: 300000
         common:
             bootstrap:
                 servers: localhost:9092

@@ -27,6 +27,9 @@ public class KafkaConsumerConfig {
     @Value("${application.kafka.video-processing.properties.max-poll-records}")
     private String maxPollRecords;
 
+    @Value("${application.kafka.video-processing.properties.session.timeout.ms}")
+    private String sessionTimeout;
+
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -41,6 +44,7 @@ public class KafkaConsumerConfig {
             StringDeserializer.class);
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
             maxPollRecords);
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeout);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 

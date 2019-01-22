@@ -169,6 +169,8 @@ application:
         video-processing:
             topic: video-processing
             group-id: video-processing-group
+            properties:
+                max-poll-records: 20
         common:
             bootstrap:
                 servers: localhost:9092

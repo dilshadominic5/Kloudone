@@ -1,6 +1,5 @@
 package com.xedflix.video.service;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.xedflix.video.domain.Video;
 import com.xedflix.video.exceptions.OutputEmptyException;

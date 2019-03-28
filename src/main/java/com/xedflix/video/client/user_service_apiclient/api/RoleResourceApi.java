@@ -8,49 +8,38 @@ package com.xedflix.video.client.user_service_apiclient.api;
 import com.xedflix.video.client.user_service_apiclient.model.ActionPermissionForRole;
 import com.xedflix.video.client.user_service_apiclient.model.UserRole;
 import io.swagger.annotations.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.validation.constraints.NotNull;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2018-09-07T19:33:07.937+05:30[Asia/Kolkata]")
 
 @Api(value = "RoleResource", description = "the RoleResource API")
 public interface RoleResourceApi {
 
     @ApiOperation(value = "getPermissionForRoleOnActionItem", nickname = "getPermissionForRoleOnActionItemUsingGET", notes = "", response = ActionPermissionForRole.class, tags={ "role-resource", })
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK", response = ActionPermissionForRole.class),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found") })
     @RequestMapping(value = "/api/role/get-permission-for-role-on-action-item",
-        produces = "*/*", 
+        produces = "*/*",
         method = RequestMethod.GET)
     ResponseEntity<ActionPermissionForRole> getPermissionForRoleOnActionItemUsingGET(@NotNull @ApiParam(value = "actionItem", required = true) @Valid @RequestParam(value = "actionItem", required = true) String actionItem);
 
 
     @ApiOperation(value = "getRoleOfUser", nickname = "getRoleOfUserUsingGET", notes = "", response = UserRole.class, tags={ "role-resource", })
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK", response = UserRole.class),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found") })
     @RequestMapping(value = "/api/role/get-role-of-user",
-        produces = "*/*", 
+        produces = "*/*",
         method = RequestMethod.GET)
     ResponseEntity<UserRole> getRoleOfUserUsingGET();
 

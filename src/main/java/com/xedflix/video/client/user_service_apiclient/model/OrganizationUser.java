@@ -1,13 +1,11 @@
 package com.xedflix.video.client.user_service_apiclient.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 /**
  * OrganizationUser
@@ -111,7 +109,7 @@ public class OrganizationUser   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class OrganizationUser {\n");
-    
+
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    organizationId: ").append(toIndentedString(organizationId)).append("\n");
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");

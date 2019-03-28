@@ -1,15 +1,15 @@
 package com.xedflix.video.client.user_service_apiclient.model;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.xedflix.video.client.user_service_apiclient.model.ExtendedUser;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
+
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 /**
  * Resource level permission. Much granular than an entity u1 | v1 | video u1 | l1 | livestream u1 | v2 | video
@@ -30,9 +30,9 @@ public class EndUserResourceAccess   {
    */
   public enum ResourceTypeEnum {
     VIDEO("VIDEO"),
-    
+
     LIVE_STREAM("LIVE_STREAM"),
-    
+
     BLOG_POST("BLOG_POST");
 
     private String value;
@@ -171,7 +171,7 @@ public class EndUserResourceAccess   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class EndUserResourceAccess {\n");
-    
+
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    resourceId: ").append(toIndentedString(resourceId)).append("\n");
     sb.append("    resourceType: ").append(toIndentedString(resourceType)).append("\n");

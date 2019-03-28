@@ -1,17 +1,14 @@
 package com.xedflix.video.client.user_service_apiclient.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.xedflix.video.client.user_service_apiclient.model.PermissionOnEntity;
-import com.xedflix.video.client.user_service_apiclient.model.UserCourseActivityHistory;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+import java.util.Objects;
 
 /**
  * ExtendedUser
@@ -183,7 +180,7 @@ public class ExtendedUser   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ExtendedUser {\n");
-    
+
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    permissionOnEntities: ").append(toIndentedString(permissionOnEntities)).append("\n");
     sb.append("    phone: ").append(toIndentedString(phone)).append("\n");

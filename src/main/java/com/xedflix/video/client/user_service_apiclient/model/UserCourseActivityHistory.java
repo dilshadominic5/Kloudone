@@ -1,16 +1,13 @@
 package com.xedflix.video.client.user_service_apiclient.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.xedflix.video.client.user_service_apiclient.model.ExtendedUser;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.util.Date;
-import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 /**
  * UserCourseActivityHistory
@@ -215,7 +212,7 @@ public class UserCourseActivityHistory   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class UserCourseActivityHistory {\n");
-    
+
     sb.append("    activityType: ").append(toIndentedString(activityType)).append("\n");
     sb.append("    courseId: ").append(toIndentedString(courseId)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");

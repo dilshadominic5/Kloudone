@@ -1,9 +1,8 @@
 package com.xedflix.video.config;
 
-import com.xedflix.video.security.*;
-import com.xedflix.video.security.jwt.*;
-
-import org.springframework.context.annotation.Bean;
+import com.xedflix.video.security.AuthoritiesConstants;
+import com.xedflix.video.security.jwt.JWTConfigurer;
+import com.xedflix.video.security.jwt.TokenProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;

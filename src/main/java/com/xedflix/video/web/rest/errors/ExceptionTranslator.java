@@ -1,7 +1,6 @@
 package com.xedflix.video.web.rest.errors;
 
 import com.xedflix.video.web.rest.util.HeaderUtil;
-
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

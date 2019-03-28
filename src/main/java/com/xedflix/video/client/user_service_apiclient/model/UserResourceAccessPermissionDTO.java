@@ -3,7 +3,6 @@ package com.xedflix.video.client.user_service_apiclient.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.xedflix.video.client.user_service_apiclient.model.UserDTO;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,11 +30,11 @@ public class UserResourceAccessPermissionDTO   {
    */
   public enum ResourceTypeEnum {
     VIDEO("Video"),
-    
+
     COURSE("Course"),
-    
+
     COURSERESOURCE("CourseResource"),
-    
+
     COURSEMODULE("CourseModule");
 
     private String value;

@@ -7,45 +7,35 @@ package com.xedflix.video.client.user_service_apiclient.api;
 
 import com.xedflix.video.client.user_service_apiclient.model.OrganizationUser;
 import io.swagger.annotations.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2018-09-07T19:33:07.937+05:30[Asia/Kolkata]")
 
 @Api(value = "OrganizationUserResource", description = "the OrganizationUserResource API")
 public interface OrganizationUserResourceApi {
 
     @ApiOperation(value = "createOrganizationUser", nickname = "createOrganizationUserUsingPOST", notes = "", response = OrganizationUser.class, tags={ "organization-user-resource", })
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK", response = OrganizationUser.class),
         @ApiResponse(code = 201, message = "Created"),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found") })
     @RequestMapping(value = "/api/organization-users",
-        produces = "*/*", 
+        produces = "*/*",
         consumes = "application/json",
         method = RequestMethod.POST)
     ResponseEntity<OrganizationUser> createOrganizationUserUsingPOST(@ApiParam(value = "organizationUser" ,required=true )  @Valid @RequestBody OrganizationUser organizationUser);
 
 
     @ApiOperation(value = "deleteOrganizationUser", nickname = "deleteOrganizationUserUsingDELETE", notes = "", tags={ "organization-user-resource", })
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 204, message = "No Content"),
         @ApiResponse(code = 401, message = "Unauthorized"),
@@ -56,38 +46,38 @@ public interface OrganizationUserResourceApi {
 
 
     @ApiOperation(value = "getAllOrganizationUsers", nickname = "getAllOrganizationUsersUsingGET", notes = "", response = OrganizationUser.class, responseContainer = "List", tags={ "organization-user-resource", })
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK", response = OrganizationUser.class, responseContainer = "List"),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found") })
     @RequestMapping(value = "/api/organization-users",
-        produces = "*/*", 
+        produces = "*/*",
         method = RequestMethod.GET)
     ResponseEntity<List<OrganizationUser>> getAllOrganizationUsersUsingGET();
 
 
     @ApiOperation(value = "getOrganizationUser", nickname = "getOrganizationUserUsingGET", notes = "", response = OrganizationUser.class, tags={ "organization-user-resource", })
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK", response = OrganizationUser.class),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found") })
     @RequestMapping(value = "/api/organization-users/{id}",
-        produces = "*/*", 
+        produces = "*/*",
         method = RequestMethod.GET)
     ResponseEntity<OrganizationUser> getOrganizationUserUsingGET(@ApiParam(value = "id",required=true) @PathVariable("id") Long id);
 
 
     @ApiOperation(value = "updateOrganizationUser", nickname = "updateOrganizationUserUsingPUT", notes = "", response = OrganizationUser.class, tags={ "organization-user-resource", })
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK", response = OrganizationUser.class),
         @ApiResponse(code = 201, message = "Created"),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found") })
     @RequestMapping(value = "/api/organization-users",
-        produces = "*/*", 
+        produces = "*/*",
         consumes = "application/json",
         method = RequestMethod.PUT)
     ResponseEntity<OrganizationUser> updateOrganizationUserUsingPUT(@ApiParam(value = "organizationUser" ,required=true )  @Valid @RequestBody OrganizationUser organizationUser);

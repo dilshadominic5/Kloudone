@@ -1,10 +1,10 @@
 package com.xedflix.video.service;
 
 import com.google.common.hash.Hashing;
-import com.xedflix.video.client.user_service_apiclient.api.RoleResourceApiClient;
-import com.xedflix.video.client.user_service_apiclient.api.UserResourceAccessPermissionResourceApiClient;
-import com.xedflix.video.client.user_service_apiclient.model.ActionPermissionForRole;
-import com.xedflix.video.client.user_service_apiclient.model.UserResourceAccessPermission;
+import com.xedflix.video.client.userserviceapiclient.api.RoleResourceApiClient;
+import com.xedflix.video.client.userserviceapiclient.api.UserResourceAccessPermissionResourceApiClient;
+import com.xedflix.video.client.userserviceapiclient.model.ActionPermissionForRole;
+import com.xedflix.video.client.userserviceapiclient.model.UserResourceAccessPermission;
 import com.xedflix.video.domain.Livestream;
 import com.xedflix.video.repository.LivestreamRepository;
 import com.xedflix.video.security.UserRole;

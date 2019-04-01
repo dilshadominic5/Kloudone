@@ -1,11 +1,11 @@
 package com.xedflix.video;
 
-import com.xedflix.video.client.user_service_apiclient.api.RoleResourceApiClient;
-import com.xedflix.video.client.user_service_apiclient.api.UserResourceAccessPermissionResourceApiClient;
-import com.xedflix.video.client.user_service_apiclient.model.ActionPermissionForRole;
-import com.xedflix.video.client.user_service_apiclient.model.UserResourceAccessPermission;
-import com.xedflix.video.client.user_service_apiclient.model.UserResourceAccessPermissionDTO;
-import com.xedflix.video.client.user_service_apiclient.model.UserRole;
+import com.xedflix.video.client.userserviceapiclient.api.RoleResourceApiClient;
+import com.xedflix.video.client.userserviceapiclient.api.UserResourceAccessPermissionResourceApiClient;
+import com.xedflix.video.client.userserviceapiclient.model.ActionPermissionForRole;
+import com.xedflix.video.client.userserviceapiclient.model.UserResourceAccessPermission;
+import com.xedflix.video.client.userserviceapiclient.model.UserResourceAccessPermissionDTO;
+import com.xedflix.video.client.userserviceapiclient.model.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
